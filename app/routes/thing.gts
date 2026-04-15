@@ -1,20 +1,14 @@
-import BaseRoute from './BaseRoute';
-import { tracked } from '@glimmer/tracking';
-import { on } from '@ember/modifier';
+import BaseRoute from 'use-route-manager/routes/BaseRoute';
 
 export default class ThingRoute extends BaseRoute {
-  @tracked something = 1;
+  <template>
+    <div>
+      <h1>Hello from a Pioneer Route! </h1>
+      <p>This route is rendered using a route manager entirely defined inside
+        this app.</p>
+      <p>No controller or model</p>
 
-  increment = () => {
-    this.something++;
-  };
-
-  component = <template>
-    <h1>Hello from a Pioneer Route! {{this.something}}</h1>
-    <p>This route is rendered using a route manager entirely defined inside this
-      app.</p>
-    <p>No controller or model</p>
-    {{log "controller & model" @controller @model}}
-    <button type="button" {{on "click" this.increment}}>Increment</button>
-  </template>;
+      {{outlet}}
+    </div>
+  </template>
 }
