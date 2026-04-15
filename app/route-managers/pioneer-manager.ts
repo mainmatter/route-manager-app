@@ -1,11 +1,10 @@
 import type { RouteStateBucket } from '@ember/-internals/routing/route-managers/utils';
 import { routeCapabilities } from '@ember/routing';
 import type { Destroyable } from '@glimmer/interfaces';
-import { setOwner } from '@ember/owner';
-import type Owner from '@ember/owner';
 import { getComponentTemplate } from '@glimmer/manager';
 import { getOwner } from '@glimmer/owner';
 import { once } from '@ember/runloop';
+import type BaseRoute from 'use-route-manager/routes/BaseRoute';
 
 type StateBucket = RouteStateBucket & {
   invokable?: object;
@@ -28,16 +27,6 @@ export class RouteBucket {
 export class PioneerRouteManager {
   capabilities = routeCapabilities('1.0');
 
-  private owner: Owner;
-  private router: unknown;
-
-  constructor(owner: Owner) {
-    console.log('PioneerRouteManager initialized with owner:', owner);
-    this.owner = owner;
-  }
-
-  // createRoute, getDestroyable, willEnter, willExit, didEnter, didExit methods would be implemented here as needed
-
   createRoute(definition: BaseRoute, args: { name: string }): RouteBucket {
     console.log(
       'Creating route with definition:',
@@ -45,16 +34,14 @@ export class PioneerRouteManager {
       'and args:',
       args
     );
-    const classicRouteInstance = {
-      definition,
-    };
-    setOwner(classicRouteInstance, this.owner);
+
     const bucket = {
       route: definition,
-      definition,
+      instance: {
+        definition,
+      },
       args,
       invokable: undefined,
-      instance: classicRouteInstance,
     };
 
     return bucket;
@@ -100,10 +87,7 @@ export class PioneerRouteManager {
     const template = getComponentTemplate(routeclass)!(owner);
 
     bucket.invokable = template;
-    console.log(
-      `Getting invokable for route ${bucket.args.name} with args`,
-      bucket
-    );
+    console.log(`Getting invokable for route ${bucket.args.name}`);
     return Promise.resolve(bucket.invokable);
   }
 }
