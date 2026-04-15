@@ -16,4 +16,4 @@ export default class BaseRoute extends EmberObject {
     this._router = router as EmberRouter;
   }
 }
-setRouteManager((owner) => new PioneerRouteManager(owner), BaseRoute);
+setRouteManager(() => new PioneerRouteManager(), BaseRoute);
