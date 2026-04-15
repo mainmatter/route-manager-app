@@ -1,7 +1,11 @@
 <template>
-  <hr />
-  <h2>Hello from a Classic Route!</h2>
-  <p>Zebra striping of route managers works!</p>
+  <div class="classic">
+    <h2>Hello from a Classic Route!</h2>
+    <p>Zebra striping of route managers works!</p>
 
-  {{outlet}}
+    <p>Model data is passed in as expected: {{@model}}</p>
+    <p>Model properties are accessible: {{@model.name}}</p>
+
+    {{outlet}}
+  </div>
 </template>

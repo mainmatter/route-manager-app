@@ -1,1 +1,26 @@
-/* Ember supports plain CSS out of the box. More info: https://cli.emberjs.com/release/advanced-use/stylesheets/ */
+body {
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+  margin: 0;
+  padding: 16px;
+}
+
+h1,
+h2 {
+  margin: 0 0 16px;
+}
+
+div {
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.pioneer {
+  border: 2px solid purple;
+  background: lavender;
+}
+
+.classic {
+  border: 2px solid teal;
+  background: lightcyan;
+}
