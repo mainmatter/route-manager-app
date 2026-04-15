@@ -5,6 +5,7 @@
 
     <p>Model data is passed in as expected: {{@model}}</p>
     <p>Model properties are accessible: {{@model.name}}</p>
+    <p>Has a generated controller: {{@controller}}</p>
 
     {{outlet}}
   </div>
