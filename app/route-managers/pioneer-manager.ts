@@ -1,4 +1,3 @@
-import type { RouteStateBucket } from '@ember/-internals/routing/route-managers/utils';
 import { routeCapabilities } from '@ember/routing';
 import type { Destroyable } from '@glimmer/interfaces';
 import { getComponentTemplate } from '@glimmer/manager';
@@ -6,12 +5,9 @@ import { getOwner } from '@glimmer/owner';
 import { once } from '@ember/runloop';
 import type Owner from '@ember/owner';
 import type BaseRoute from 'use-route-manager/routes/BaseRoute';
+import type { RouteStateBucket } from '@ember/-internals/routing';
 
-type StateBucket = RouteStateBucket & {
-  invokable?: object;
-};
-
-export class RouteBucket {
+export class RouteBucket implements RouteStateBucket {
   route: BaseRoute;
   invokable: object | undefined;
   instance: object;
@@ -47,39 +43,40 @@ export class PioneerRouteManager {
     return new RouteBucket(route, args);
   }
 
-  getDestroyable(bucket: StateBucket): Destroyable | null {
+  getDestroyable(bucket: RouteBucket): Destroyable | null {
     return bucket.route;
   }
 
-  willEnter(bucket: StateBucket, _args: any): void {
+  willEnter(bucket: RouteBucket): void {
     console.log(`Will enter route`, bucket.args.name);
   }
 
-  enter(bucket: StateBucket, _args: any): Promise<unknown> {
+  enter(bucket: RouteBucket): Promise<unknown> {
     console.log(`Entering route`, bucket.args.name);
     return Promise.resolve();
   }
 
-  didEnter(bucket: StateBucket, _args: any): void {
+  didEnter(bucket: RouteBucket): void {
+    // eslint-disable-next-line ember/no-runloop
     once(bucket.route._router, '_setOutlets');
   }
 
-  willExit(bucket: StateBucket, _args: any): void {
+  willExit(bucket: RouteBucket): void {
     console.log(`Will exit route`, bucket.args.name);
   }
 
-  exit(bucket: StateBucket, _args: any): void {
+  exit(bucket: RouteBucket): void {
     console.log(`Exiting route`, bucket.args.name);
   }
 
-  didExit(bucket: StateBucket, _args: any): void {
+  didExit(bucket: RouteBucket): void {
     console.log(`Did exit route`, bucket.args.name);
   }
 
-  getInvokable(bucket: StateBucket): Promise<object | undefined> {
+  getInvokable(bucket: RouteBucket): Promise<object | undefined> {
     const owner = getOwner(bucket.instance)!;
 
-    const RouteClass = (bucket.instance as object).constructor;
+    const RouteClass = bucket.instance.constructor;
     const template = getComponentTemplate(RouteClass)!(owner);
 
     bucket.invokable = template;
