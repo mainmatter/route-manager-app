@@ -4,6 +4,7 @@ import type { Destroyable } from '@glimmer/interfaces';
 import { getComponentTemplate } from '@glimmer/manager';
 import { getOwner } from '@glimmer/owner';
 import { once } from '@ember/runloop';
+import type Owner from '@ember/owner';
 import type BaseRoute from 'use-route-manager/routes/BaseRoute';
 
 type StateBucket = RouteStateBucket & {
@@ -27,67 +28,61 @@ export class RouteBucket {
 export class PioneerRouteManager {
   capabilities = routeCapabilities('1.0');
 
-  createRoute(definition: BaseRoute, args: { name: string }): RouteBucket {
-    console.log(
-      'Creating route with definition:',
-      definition,
-      'and args:',
-      args
+  #owner: Owner;
+
+  constructor(owner: Owner) {
+    this.#owner = owner;
+  }
+
+  createRoute(RouteClass: object, args: { name: string }): RouteBucket {
+    // Instantiate the plain class route using `new`, passing the owner.
+    // This is the key difference from ClassicRouteManager — no EmberObject.create().
+    const route = new (RouteClass as new (owner: Owner) => BaseRoute)(
+      this.#owner
     );
 
-    const bucket = {
-      route: definition,
-      instance: {
-        definition,
-      },
-      args,
-      invokable: undefined,
-    };
+    console.log('Creating route:', args.name);
 
-    return bucket;
+    return new RouteBucket(route, args);
   }
 
   getDestroyable(bucket: StateBucket): Destroyable | null {
     return bucket.route;
   }
 
-  willEnter(bucket: StateBucket, args: any): void {
-    // Implementation for willEnter
-    console.log(`Will enter route with args`, bucket.args);
+  willEnter(bucket: StateBucket, _args: any): void {
+    console.log(`Will enter route`, bucket.args.name);
   }
 
-  enter(bucket: StateBucket, args: any): Promise<unknown> {
-    // Implementation for enter
-    console.log(`Entering route with args`, bucket.args);
+  enter(bucket: StateBucket, _args: any): Promise<unknown> {
+    console.log(`Entering route`, bucket.args.name);
     return Promise.resolve();
   }
 
-  didEnter(bucket: StateBucket, args: any): void {
+  didEnter(bucket: StateBucket, _args: any): void {
     once(bucket.route._router, '_setOutlets');
   }
 
-  willExit(bucket: StateBucket, args: any): void {
-    console.log(`Will exit route with args`, bucket.args);
-    // Implementation for willExit
+  willExit(bucket: StateBucket, _args: any): void {
+    console.log(`Will exit route`, bucket.args.name);
   }
 
-  exit(bucket: StateBucket, args: any): void {
-    console.log(`Exiting route with args`, bucket.args);
-    // Implementation for exit
+  exit(bucket: StateBucket, _args: any): void {
+    console.log(`Exiting route`, bucket.args.name);
   }
 
-  didExit(bucket: StateBucket, args: any): void {
-    console.log(`Did exit route with args`, bucket.args);
-    // Implementation for didExit
+  didExit(bucket: StateBucket, _args: any): void {
+    console.log(`Did exit route`, bucket.args.name);
   }
 
   getInvokable(bucket: StateBucket): Promise<object | undefined> {
-    const owner = getOwner(bucket.instance.definition)!;
-    const routeclass = owner.factoryFor(`route:${bucket.args.name}`).class;
-    const template = getComponentTemplate(routeclass)!(owner);
+    const owner = getOwner(bucket.instance)!;
+
+    const RouteClass = (bucket.instance as object).constructor;
+    const template = getComponentTemplate(RouteClass)!(owner);
 
     bucket.invokable = template;
-    console.log(`Getting invokable for route ${bucket.args.name}`);
+    console.log(`Getting invokable for route`, bucket.args.name);
     return Promise.resolve(bucket.invokable);
   }
 }
