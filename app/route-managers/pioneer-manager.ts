@@ -34,12 +34,13 @@ export class PioneerRouteManager {
     this.#owner = owner;
   }
 
-  createRoute(RouteClass: object, args: { name: string }): RouteBucket {
+  createRoute(
+    RouteClass: typeof BaseRoute,
+    args: { name: string }
+  ): RouteBucket {
     // Instantiate the plain class route using `new`, passing the owner.
     // This is the key difference from ClassicRouteManager — no EmberObject.create().
-    const route = new (RouteClass as new (owner: Owner) => BaseRoute)(
-      this.#owner
-    );
+    const route = new RouteClass(this.#owner);
 
     console.log('Creating route:', args.name);
 
