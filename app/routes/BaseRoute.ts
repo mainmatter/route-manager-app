@@ -6,10 +6,11 @@ import { PioneerRouteManager } from 'use-route-manager/route-managers/pioneer-ma
 
 export default class BaseRoute {
   _router!: EmberRouter;
-  _stashNames() {}
+  _stashNames() {} // used by ember/router for QP's but not relevant to this demo
 
   constructor(owner: Owner) {
     setOwner(this, owner);
+    // eslint-disable-next-line ember/no-private-routing-service
     const router = owner.lookup('router:main');
     this._router = router as EmberRouter;
   }
