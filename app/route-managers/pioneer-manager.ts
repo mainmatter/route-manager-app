@@ -83,6 +83,7 @@ export class PioneerRouteManager {
 
   didEnter(bucket: RouteBucket): void {
     console.log(`Did enter route`, bucket.args.name);
+    console.log(`------------------------`);
     once(bucket.route._router, '_setOutlets');
   }
 
