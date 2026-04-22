@@ -1,3 +1,4 @@
+/* eslint-disable ember/no-runloop */
 import type { RouteStateBucket } from '@ember/-internals/routing';
 import type Owner from '@ember/owner';
 import { routeCapabilities } from '@ember/routing';
@@ -52,6 +53,24 @@ export class PioneerRouteManager {
 
   willEnter(bucket: RouteBucket): void {
     console.log(`Will enter route`, bucket.args.name);
+
+    if (!bucket.route.loading) {
+      return;
+    }
+
+    const fakeRouteInfo = {
+      route: bucket.route, // needs .routeName, .bucket, and an owner set
+      invokable: bucket.route.loading, // the loading template
+    };
+
+    const microlib = bucket.route._router._routerMicrolib;
+
+    if (!microlib.currentRouteInfos) {
+      microlib.currentRouteInfos = [];
+    }
+
+    microlib.currentRouteInfos.push(fakeRouteInfo);
+    once(bucket.route._router, '_setOutlets');
   }
 
   async enter(bucket: RouteBucket): Promise<unknown> {
@@ -80,6 +99,11 @@ export class PioneerRouteManager {
   }
 
   getInvokable(bucket: RouteBucket): Promise<object | undefined> {
+    if (bucket.invokable) {
+      console.log(`Invokable already exists for route`, bucket.args.name);
+      return Promise.resolve(bucket.invokable);
+    }
+
     const owner = getOwner(bucket.route)!;
 
     console.log('route bucket', bucket);
