@@ -1,18 +1,9 @@
 import BaseRoute from 'use-route-manager/routes/BaseRoute';
-import { cached } from '@glimmer/tracking';
+
 export default class ClassicSubRoute extends BaseRoute {
   async model() {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     return null;
-  }
-
-  @cached
-  get loading() {
-    return <template>
-      <div class="pioneer">
-        <h3>Loading sub route...</h3>
-      </div>
-    </template>;
   }
 
   <template>

@@ -1,8 +1,7 @@
 import BaseRoute from 'use-route-manager/routes/BaseRoute';
 import { LinkTo } from '@ember/routing';
-import { cached } from '@glimmer/tracking';
 
-export const LoadingTemplate = <template>
+export const LoadingState = <template>
   <div class="pioneer">
     <h3>Loading...</h3>
   </div>
@@ -11,12 +10,9 @@ export const LoadingTemplate = <template>
 export default class ApplicationRoute extends BaseRoute {
   async model() {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    return {};
-  }
-
-  @cached
-  get loading() {
-    return LoadingTemplate;
+    return {
+      message: 'Hello from the application model!',
+    };
   }
 
   <template>
@@ -30,6 +26,8 @@ export default class ApplicationRoute extends BaseRoute {
       <h1>Pioneer Route Manager Example App</h1>
       <p>This route is rendered using a route manager entirely defined inside
         this app.</p>
+
+      <p>Model: {{if @model.message @model.message "Loading"}}</p>
 
       {{outlet}}
     </div>

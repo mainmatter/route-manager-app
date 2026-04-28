@@ -19,10 +19,6 @@ export default class BaseRoute {
     return null;
   }
 
-  get loading(): unknown {
-    return null;
-  }
-
   constructor(owner: Owner) {
     setOwner(this, owner);
     // eslint-disable-next-line ember/no-private-routing-service
