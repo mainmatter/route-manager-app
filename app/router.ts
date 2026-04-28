@@ -11,4 +11,24 @@ Router.map(function () {
   this.route('classic', function () {
     this.route('sub');
   });
+
+  this.route('pokemon', function () {
+    this.route('pikachu', function () {
+      this.route('bulbasaur', function () {
+        this.route('charmander', function () {
+          this.route('squirtle');
+        });
+      });
+    });
+  });
+
+  this.route('classic-pokemon', function () {
+    this.route('pikachu', function () {
+      this.route('bulbasaur', function () {
+        this.route('charmander', function () {
+          this.route('squirtle');
+        });
+      });
+    });
+  });
 });

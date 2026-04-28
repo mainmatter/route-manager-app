@@ -3,7 +3,7 @@ import { LinkTo } from '@ember/routing';
 
 export const LoadingState = <template>
   <div class="pioneer">
-    <h3>Loading...</h3>
+    <h3>Loading The Application...</h3>
   </div>
 </template>;
 
@@ -22,6 +22,17 @@ export default class ApplicationRoute extends BaseRoute {
       <LinkTo @route="classic">Classic Route</LinkTo>
       |
       <LinkTo @route="classic.sub">Go to Sub Route</LinkTo>
+      |
+      <LinkTo @route="pokemon">Go to Pokemon Route</LinkTo>
+      |
+      <LinkTo @route="pokemon.pikachu.bulbasaur.charmander.squirtle">Go to
+        Squirtle Route</LinkTo>
+      |
+      <LinkTo @route="classic-pokemon">Go to Classic Pokemon Route</LinkTo>
+      |
+      <LinkTo
+        @route="classic-pokemon.pikachu.bulbasaur.charmander.squirtle"
+      >Go to Classic Squirtle Route</LinkTo>
 
       <h1>Pioneer Route Manager Example App</h1>
       <p>This route is rendered using a route manager entirely defined inside
