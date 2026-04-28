@@ -10,12 +10,17 @@ export const LoadingState = <template>
 </template>;
 
 export default class ApplicationRoute extends BaseRoute {
-  async model() {
+  async model(ancestorPromises) {
     const response = await fetch(
       'https://pokeapi.co/api/v2/pokemon/charmander'
     );
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const parentContext = await ancestorPromises;
+
     const data = await response.json();
+    console.log('charmander route has bulbasaur context', parentContext);
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     return {
       message: 'Hello from the pokemon model!',

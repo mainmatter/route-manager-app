@@ -96,9 +96,14 @@ export class PioneerRouteManager {
     bucket.isLoading = true;
   }
 
-  async enter(bucket: RouteBucket): Promise<unknown> {
+  async enter(
+    bucket: RouteBucket,
+    { getAncestorPromise }: { getAncestorPromise: () => Promise<unknown> }
+  ): Promise<unknown> {
     try {
-      const context = await bucket.route.model();
+      const ancestorPromises = getAncestorPromise();
+      console.log('ancestor promises', ancestorPromises);
+      const context = await bucket.route.model(ancestorPromises);
       bucket.context = context;
       return context;
     } finally {

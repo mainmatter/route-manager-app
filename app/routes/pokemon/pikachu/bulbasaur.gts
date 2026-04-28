@@ -16,7 +16,7 @@ export default class ApplicationRoute extends BaseRoute {
     const data = await response.json();
 
     return {
-      message: 'Hello from the pokemon model!',
+      message: 'Hello from the bulbasaur model!',
       pokemon: data,
     };
   }
