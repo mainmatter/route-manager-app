@@ -1,19 +1,44 @@
 import { makeRouteTemplate } from '@ember/-internals/glimmer';
 import type { InternalOwner } from '@ember/-internals/owner';
 import type { RouteStateBucket } from '@ember/-internals/routing';
+import templateOnly from '@ember/component/template-only';
+import { assert } from '@ember/debug';
 import type Owner from '@ember/owner';
 import { routeCapabilities } from '@ember/routing';
+import { precompileTemplate } from '@ember/template-compilation';
 import type { CurriedComponent, Destroyable } from '@glimmer/interfaces';
-import { getComponentTemplate } from '@glimmer/manager';
+import { getComponentTemplate, setComponentTemplate } from '@glimmer/manager';
 import { getOwner } from '@glimmer/owner';
 import type { Reference } from '@glimmer/reference';
-import { createComputeRef } from '@glimmer/reference';
+import { createComputeRef, createConstRef } from '@glimmer/reference';
 import { createCapturedArgs, curry, EMPTY_POSITIONAL } from '@glimmer/runtime';
 import { tracked } from '@glimmer/tracking';
 import { dict } from '@glimmer/util';
 import type BaseRoute from 'use-route-manager/routes/BaseRoute';
 
 const routes = import.meta.glob('../routes/**/*.gts');
+
+// Wrapper template-only component that switches between the route's loading
+// state and its main template based on @isLoading. The route's resolved invokable
+// is passed in as @RouteComponent and the optional loading template as
+// @LoadingState. @model is forwarded to the route component once loading is done.
+const RouteShell = templateOnly();
+setComponentTemplate(
+  precompileTemplate(
+    `
+    {{#if @LoadingState}}
+      {{#if @isLoading}}
+        {{#if @LoadingState}}<@LoadingState />{{/if}}
+      {{else}}
+        <@RouteComponent @model={{@model}} />
+      {{/if}}
+    {{else}}
+      <@RouteComponent @model={{@model}} />
+     {{/if}}`,
+    { strictMode: true }
+  ),
+  RouteShell
+);
 
 export class RouteBucket implements RouteStateBucket {
   route: BaseRoute;
@@ -28,6 +53,10 @@ export class RouteBucket implements RouteStateBucket {
   // The resolved model returned from enter(). Tracked so that the @model ref
   // in the curried invokable re-renders the template when data arrives.
   @tracked context: unknown = undefined;
+
+  // True while enter() is in flight. The wrapper template reads this to
+  // switch between the loading state and the resolved route component.
+  @tracked isLoading = true;
 
   constructor(route: BaseRoute, args: { name: string }) {
     this.route = route;
@@ -61,12 +90,23 @@ export class PioneerRouteManager {
     return bucket.route;
   }
 
-  willEnter(bucket: RouteBucket): void {}
+  willEnter(bucket: RouteBucket): void {
+    // Mark loading at the start of every enter so re-entries (same route, new
+    // params) flip the wrapper back to the loading state.
+    bucket.isLoading = true;
+  }
 
   async enter(bucket: RouteBucket): Promise<unknown> {
-    const context = await bucket.route.model();
-    bucket.context = context;
-    return context;
+    try {
+      const context = await bucket.route.model();
+      bucket.context = context;
+      return context;
+    } finally {
+      // Tracked field, so the wrapper template re-renders to show the route
+      // component once data has arrived (or after a failure, to avoid getting
+      // stuck on the loading state).
+      bucket.isLoading = false;
+    }
   }
 
   didEnter(_bucket: RouteBucket): void {}
@@ -77,30 +117,30 @@ export class PioneerRouteManager {
 
   didExit(_bucket: RouteBucket): void {}
 
-  nameToFilePath(name: string): string {
-    name = name.replace(/\./g, '/');
-    return `${name}`;
-  }
-
   async getInvokable(bucket: RouteBucket): Promise<object | undefined> {
     if (bucket.invokable !== undefined) {
-      return Promise.resolve(bucket.invokable);
+      return bucket.invokable;
     }
 
-    console.log(
-      `PioneerRouteManager: rendering route "${this.nameToFilePath(bucket.args.name)}"`
+    const owner = getOwner(bucket.route)! as InternalOwner;
+
+    // Pull the named LoadingState export off the route module if it has one.
+    // Routes that omit it will render the route template immediately.
+    const routePath = `../routes/${bucket.args.name.replace(/\./g, '/')}.gts`;
+    const routeModule = (await routes[routePath]?.()) as
+      | { LoadingState?: object; default: object }
+      | undefined;
+    const LoadingState = routeModule?.LoadingState;
+    const RouteClass = routeModule?.default;
+
+    assert(
+      `PioneerRouteManager: failed to load route class for "${bucket.args.name}". ` +
+        `Make sure the route file is named correctly and exports a route class as default.`,
+      RouteClass
     );
 
-    const { LoadingState } =
-      await routes[`../routes/${this.nameToFilePath(bucket.args.name)}.gts`]();
-
-    console.log('PioneerRouteManager: got LoadingState', LoadingState);
-
-    const owner = getOwner(bucket.route)!;
-    const RouteClass = bucket.route.constructor;
-
     // Retrieve the template factory from the co-located .gts class and wrap it
-    // in a RouteTemplate so it can be rendered as a component by the outlet helper.
+    // in a RouteTemplate so it can be rendered as a component.
     const templateFactory = getComponentTemplate(RouteClass);
     if (!templateFactory) {
       throw new Error(
@@ -109,34 +149,36 @@ export class PioneerRouteManager {
       );
     }
 
-    // templateFactory(owner) returns a raw Template, which has no component
-    // manager attached. makeRouteTemplate wraps it in a RouteTemplate component
-    // definition that knows how to render the template, so the curry below has
-    // a real ComponentDefinition to operate on.
     const template = templateFactory(owner);
-    const component = makeRouteTemplate(
-      owner as InternalOwner,
-      bucket.args.name,
-      template
-    );
+    const RouteComponent = makeRouteTemplate(owner, bucket.args.name, template);
 
-    // @model is a compute ref over bucket.context, which is @tracked, so the
-    // template re-renders when model() resolves and bucket.context updates.
+    // Curry RouteShell with the three args it needs. @model is a compute ref
+    // over bucket.context (tracked) so the route template re-renders when
+    // model() resolves. @isLoading is a compute ref over bucket.isLoading
+    // (tracked) so the wrapper switches from LoadingState to RouteComponent
+    // when enter() finishes. The component args are const refs since they
+    // never change for the lifetime of the route.
     const namedArgs = dict<Reference>();
     namedArgs['model'] = createComputeRef(() => bucket.context);
+    namedArgs['isLoading'] = createComputeRef(() => bucket.isLoading);
+    namedArgs['RouteComponent'] = createConstRef(
+      RouteComponent,
+      'RouteComponent'
+    );
+    namedArgs['LoadingState'] = createConstRef(LoadingState, 'LoadingState');
 
     const args = createCapturedArgs(namedArgs, EMPTY_POSITIONAL);
-    // isResolved=true because makeRouteTemplate already produced a resolved
-    // CurriedValue with its own internal component manager.
+    // isResolved=false because RouteShell is a raw template-only component
+    // class that the VM still needs to look up via its component manager.
     const invokable = curry(
       0 as CurriedComponent,
-      component,
+      RouteShell,
       owner,
       args,
-      true
+      false
     );
 
     bucket.invokable = invokable;
-    return Promise.resolve(invokable);
+    return invokable;
   }
 }

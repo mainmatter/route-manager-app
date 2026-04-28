@@ -1,11 +1,6 @@
 import BaseRoute from 'use-route-manager/routes/BaseRoute';
 
 export default class ClassicSubRoute extends BaseRoute {
-  async model() {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return null;
-  }
-
   <template>
     <div class="pioneer">
       <h3>Hi from pioneer sub route</h3>
