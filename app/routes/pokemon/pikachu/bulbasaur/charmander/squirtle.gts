@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable warp-drive/no-external-request-patterns */
 import BaseRoute from 'use-route-manager/routes/BaseRoute';
 
 export const LoadingState = <template>
   <div class="pioneer">
-    <h3>Loading Pokemon...</h3>
+    <h3>Loading Squirtle...</h3>
   </div>
 </template>;
 
@@ -16,7 +15,7 @@ export default class ApplicationRoute extends BaseRoute {
     const data = await response.json();
 
     return {
-      message: 'Hello from the pokemon model!',
+      message: 'Hello from the Squirtle model!',
       pokemon: data,
     };
   }

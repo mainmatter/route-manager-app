@@ -28,7 +28,7 @@ setComponentTemplate(
     `
     {{#if @LoadingState}}
       {{#if @isLoading}}
-        {{#if @LoadingState}}<@LoadingState />{{/if}}
+        <@LoadingState />
       {{else}}
         <@RouteComponent @model={{@model}} />
       {{/if}}
@@ -94,12 +94,14 @@ export class PioneerRouteManager {
     // Mark loading at the start of every enter so re-entries (same route, new
     // params) flip the wrapper back to the loading state.
     bucket.isLoading = true;
+    console.log(`PioneerRouteManager: will enter route "${bucket.args.name}"`);
   }
 
   async enter(
     bucket: RouteBucket,
     { getAncestorPromise }: { getAncestorPromise: () => Promise<unknown> }
   ): Promise<unknown> {
+    console.log(`PioneerRouteManager: entering route "${bucket.args.name}"`);
     try {
       const ancestorPromises = getAncestorPromise();
       console.log('ancestor promises', ancestorPromises);
@@ -114,15 +116,26 @@ export class PioneerRouteManager {
     }
   }
 
-  didEnter(_bucket: RouteBucket): void {}
+  didEnter(_bucket: RouteBucket): void {
+    console.log(`PioneerRouteManager: did enter route "${_bucket.args.name}"`);
+  }
 
-  willExit(_bucket: RouteBucket): void {}
+  willExit(_bucket: RouteBucket): void {
+    console.log(`PioneerRouteManager: will exit route "${_bucket.args.name}"`);
+  }
 
-  exit(_bucket: RouteBucket): void {}
+  exit(_bucket: RouteBucket): void {
+    console.log(`PioneerRouteManager: exiting route "${_bucket.args.name}"`);
+  }
 
-  didExit(_bucket: RouteBucket): void {}
+  didExit(_bucket: RouteBucket): void {
+    console.log(`PioneerRouteManager: did exit route "${_bucket.args.name}"`);
+  }
 
   async getInvokable(bucket: RouteBucket): Promise<object | undefined> {
+    console.log(
+      `PioneerRouteManager: getInvokable for route "${bucket.args.name}"`
+    );
     if (bucket.invokable !== undefined) {
       return bucket.invokable;
     }

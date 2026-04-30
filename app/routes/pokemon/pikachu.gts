@@ -5,7 +5,7 @@ import BaseRoute from 'use-route-manager/routes/BaseRoute';
 
 export const LoadingState = <template>
   <div class="pioneer">
-    <h3>Loading Pokemon...</h3>
+    <h3>Loading Pikachu...</h3>
   </div>
 </template>;
 

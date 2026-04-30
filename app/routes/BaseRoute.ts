@@ -15,7 +15,7 @@ export default class BaseRoute {
   bucket!: RouteBucket;
 
   // eslint-disable-next-line @typescript-eslint/require-await
-  async model(): Promise<unknown> {
+  async model(parentContext: Promise<unknown>): Promise<unknown> {
     return null;
   }
 
