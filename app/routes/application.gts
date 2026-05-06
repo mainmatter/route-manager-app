@@ -30,9 +30,8 @@ export default class ApplicationRoute extends BaseRoute {
       |
       <LinkTo @route="classic-pokemon">Go to Classic Pokemon Route</LinkTo>
       |
-      <LinkTo
-        @route="classic-pokemon.pikachu.bulbasaur.charmander.squirtle"
-      >Go to Classic Squirtle Route</LinkTo>
+      <LinkTo @route="classic-pokemon.pikachu.bulbasaur.charmander.squirtle">Go
+        to Classic Squirtle Route</LinkTo>
 
       <h1>Pioneer Route Manager Example App</h1>
       <p>This route is rendered using a route manager entirely defined inside
@@ -42,5 +41,8 @@ export default class ApplicationRoute extends BaseRoute {
 
       {{outlet}}
     </div>
+
+    <br />
+    <a href="https://github.com/mainmatter/route-manager-app/">GitHub</a>
   </template>
 }
