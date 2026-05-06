@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  ember-source: link:../ember.js
+  ember-source: file:ember-source-7.1.0-alpha.1.tgz
 
 importers:
 
@@ -103,10 +103,10 @@ importers:
         version: 8.3.1(@babel/core@7.29.0)
       ember-cli-deprecation-workflow:
         specifier: ^3.4.0
-        version: 3.4.0(ember-source@ember.js)
+        version: 3.4.0(ember-source@file:ember-source-7.1.0-alpha.1.tgz(@glimmer/component@2.1.1))
       ember-load-initializers:
         specifier: ^3.0.1
-        version: 3.0.1(ember-source@ember.js)
+        version: 3.0.1(ember-source@file:ember-source-7.1.0-alpha.1.tgz(@glimmer/component@2.1.1))
       ember-modifier:
         specifier: ^4.3.0
         version: 4.3.0(@babel/core@7.29.0)
@@ -120,8 +120,8 @@ importers:
         specifier: ^13.1.1
         version: 13.2.0
       ember-source:
-        specifier: link:../ember.js
-        version: link:../ember.js
+        specifier: file:ember-source-7.1.0-alpha.1.tgz
+        version: file:ember-source-7.1.0-alpha.1.tgz(@glimmer/component@2.1.1)
       ember-template-lint:
         specifier: ^7.9.3
         version: 7.9.3
@@ -1730,6 +1730,10 @@ packages:
   assert-never@1.4.0:
     resolution: {integrity: sha512-5oJg84os6NMQNl27T9LnZkvvqzvAnHu03ShCnoj6bsJwS7L8AO4lf+C/XjK/nvzEqQB744moC6V128RucQd1jA==}
 
+  ast-types@0.13.3:
+    resolution: {integrity: sha512-XTZ7xGML849LkQP86sWdQzfhwbt3YwIO6MqbX9mUNYY98VKaaVZP7YNNm70IpwecbkkxmfC5IYAzOQ/2p29zRA==}
+    engines: {node: '>=4'}
+
   astral-regex@2.0.0:
     resolution: {integrity: sha512-Z7tMw1ytTXt5jqMcOP+OQteU1VuNK9Y02uuJtKQ1Sv69jXQKKg5cibLwGJow8yzZP+eAc18EmLGPal0bp36rvQ==}
     engines: {node: '>=8'}
@@ -1834,6 +1838,9 @@ packages:
 
   backbone@1.6.1:
     resolution: {integrity: sha512-YQzWxOrIgL6BoFnZjThVN99smKYhyEXXFyJJ2lsF1wJLyo4t+QjmkLrH8/fN22FZ4ykF70Xq7PgTugJVR4zS9Q==}
+
+  backburner.js@2.8.0:
+    resolution: {integrity: sha512-zYXY0KvpD7/CWeOLF576mV8S+bQsaIoj/GNLXXB+Eb8SJcQy5lqSjkRrZ0MZhdKUs9QoqmGNIEIe3NQfGiiscQ==}
 
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
@@ -2566,9 +2573,13 @@ packages:
 
   ember-cli-deprecation-workflow@3.4.0:
     resolution: {integrity: sha512-Ksrmib4mjD4xa0dqFgxJLBwkSp9EVYH6jSqe2NpODlBKEAZhsVzQj5wKPnC1dXfK3Erq/r1Fh3q4g46FZiCUiw==}
+    version: 3.4.0
     engines: {node: '>= 18'}
     peerDependencies:
       ember-source: '>= 3.28.0'
+
+  ember-cli-get-component-path-option@1.0.0:
+    resolution: {integrity: sha512-k47TDwcJ2zPideBCZE8sCiShSxQSpebY2BHcX2DdipMmBox5gsfyVrbKJWIHeSTTKyEUgmBIvQkqTOozEziCZA==}
 
   ember-cli-is-package-missing@1.0.0:
     resolution: {integrity: sha512-9hEoZj6Au5onlSDdcoBqYEPT8ehlYntZPxH8pBKV0GO7LNel88otSAQsCfXvbi2eKE+MaSeLG/gNaCI5UdWm9g==}
@@ -2576,12 +2587,18 @@ packages:
   ember-cli-normalize-entity-name@1.0.0:
     resolution: {integrity: sha512-rF4P1rW2P1gVX1ynZYPmuIf7TnAFDiJmIUFI1Xz16VYykUAyiOCme0Y22LeZq8rTzwBMiwBwoE3RO4GYWehXZA==}
 
+  ember-cli-path-utils@1.0.0:
+    resolution: {integrity: sha512-Qq0vvquzf4cFHoDZavzkOy3Izc893r/5spspWgyzLCPTaG78fM3HsrjZm7UWEltbXUqwHHYrqZd/R0jS08NqSA==}
+
   ember-cli-preprocess-registry@5.0.1:
     resolution: {integrity: sha512-Jb2zbE5Kfe56Nf4IpdaQ10zZ72p/RyLdgE5j5/lKG3I94QHlq+7AkAd18nPpb5OUeRUT13yQTAYpU+MbjpKTtg==}
     engines: {node: 16.* || >= 18}
 
   ember-cli-string-utils@1.1.0:
     resolution: {integrity: sha512-PlJt4fUDyBrC/0X+4cOpaGCiMawaaB//qD85AXmDRikxhxVzfVdpuoec02HSiTGTTB85qCIzWBIh8lDOiMyyFg==}
+
+  ember-cli-typescript-blueprint-polyfill@0.1.0:
+    resolution: {integrity: sha512-g0weUTOnHmPGqVZzkQTl3Nbk9fzEdFkEXydCs5mT1qBjXh8eQ6VlmjjGD5/998UXKuA0pLSCVVMbSp/linLzGA==}
 
   ember-cli-version-checker@5.1.2:
     resolution: {integrity: sha512-rk7GY+FmLn/2e22HsZs0Ycrz8HQ1W3Fv+2TFOuEFW9optnDXDgkntPBIl6gact/LHsfBM5RKbM3dHsIIeLgl0Q==}
@@ -2604,6 +2621,7 @@ packages:
 
   ember-load-initializers@3.0.1:
     resolution: {integrity: sha512-qV3vxJKw5+7TVDdtdLPy8PhVsh58MlK8jwzqh5xeOwJPNP7o0+BlhvwoIlLYTPzGaHdfjEIFCgVSyMRGd74E1g==}
+    version: 3.0.1
     engines: {node: '>= 18.*'}
     peerDependencies:
       ember-source: '>= 5'
@@ -2626,6 +2644,17 @@ packages:
 
   ember-rfc176-data@0.3.18:
     resolution: {integrity: sha512-JtuLoYGSjay1W3MQAxt3eINWXNYYQliK90tLwtb8aeCuQK8zKGCRbBodVIrkcTqshULMnRuTOS6t1P7oQk3g6Q==}
+
+  ember-router-generator@2.0.0:
+    resolution: {integrity: sha512-89oVHVJwmLDvGvAUWgS87KpBoRhy3aZ6U0Ql6HOmU4TrPkyaa8pM0W81wj9cIwjYprcQtN9EwzZMHnq46+oUyw==}
+    engines: {node: 8.* || 10.* || >= 12}
+
+  ember-source@file:ember-source-7.1.0-alpha.1.tgz:
+    resolution: {integrity: sha512-zXK9UnXZdE8hynoMVrSqu2aZJnzc3u7Nfa9F8Bt6Csmr/cB8Uuzw/VpEnToHvhM10ZIpnth+gtr1oSTsDNCHFg==, tarball: file:ember-source-7.1.0-alpha.1.tgz}
+    version: 7.1.0-alpha.1
+    engines: {node: '>= 20.19'}
+    peerDependencies:
+      '@glimmer/component': '>= 1.1.2'
 
   ember-template-lint@7.9.3:
     resolution: {integrity: sha512-iqC4rv/oVlXViGuf7hlOA/bC550ZqacZKAc8WvQV0ueeCtIYPkYYK+Tc7FwpM8qGx3jiwu/ZsTuNfPInI5pL7Q==}
@@ -3365,6 +3394,10 @@ packages:
   imurmurhash@0.1.4:
     resolution: {integrity: sha512-JmXMZ6wuvDmLiHEml9ykzqO6lwFbof0GG4IkcGaENdCRDDmMVnny7s5HsIgHCbaq0w2MyPhDqkhTUgS2LU2PHA==}
     engines: {node: '>=0.8.19'}
+
+  inflection@2.0.1:
+    resolution: {integrity: sha512-wzkZHqpb4eGrOKBl34xy3umnYHx8Si5R1U4fwmdxLo5gdH6mEK8gclckTj/qWqy4Je0bsDYe/qazZYuO7xe3XQ==}
+    engines: {node: '>=14.0.0'}
 
   inflection@3.0.2:
     resolution: {integrity: sha512-+Bg3+kg+J6JUWn8J6bzFmOWkTQ6L/NHfDRSYU+EVvuKHDxUDHAXgqixHfVlzuBQaPOTac8hn43aPhMNk6rMe3g==}
@@ -4186,6 +4219,10 @@ packages:
     resolution: {integrity: sha512-is0ctgGdPJ5951KulgfzvHGwJtZ5ck8l042vRkV6jrkpBzTmb/lueTqguWHy2JfVA+RY6gFVlaZgUS0j7S/dsw==}
     engines: {node: '>= 0.9.0'}
 
+  private@0.1.8:
+    resolution: {integrity: sha512-VvivMrbvd2nKkiG38qjULzlc+4Vx4wm/whI9pQD35YrARNnhxeiRktSOhSukRLFNlzg6Br/cJPet5J/u19r/mg==}
+    engines: {node: '>= 0.6'}
+
   proc-log@5.0.0:
     resolution: {integrity: sha512-Azwzvl90HaF0aCz1JrDdXQykFakSSNPaPoiZ9fm5qJIMHioDZEi7OAdRwSm6rSoPtY3Qutnm3L7ogmg3dc+wbQ==}
     engines: {node: ^18.17.0 || >=20.5.0}
@@ -4276,6 +4313,10 @@ packages:
     resolution: {integrity: sha512-9u/sniCrY3D5WdsERHzHE4G2YCXqoG5FTHUiCC4SIbr6XcLZBY05ya9EKjYek9O5xOAwjGq+1JdGBAS7Q9ScoA==}
     engines: {node: '>= 6'}
 
+  recast@0.18.10:
+    resolution: {integrity: sha512-XNvYvkfdAN9QewbrxeTOjgINkdY/odTgTS56ZNEWL9Ml0weT4T3sFtvnTuF+Gxyu46ANcRm1ntrF6F5LAJPAaQ==}
+    engines: {node: '>= 4'}
+
   redeyed@1.0.1:
     resolution: {integrity: sha512-8eEWsNCkV2rvwKLS1Cvp5agNjMhwRe2um+y32B2+3LqOzg4C9BBPs6vzAfV16Ivb8B9HPNKIqd8OrdBws8kNlQ==}
 
@@ -4299,6 +4340,9 @@ packages:
   regjsparser@0.13.0:
     resolution: {integrity: sha512-NZQZdC5wOE/H3UT28fVGL+ikOZcEzfMGk/c3iN9UGxzWHMa1op7274oyiUVrAG4B2EuFhus8SvkaYnhvW92p9Q==}
     hasBin: true
+
+  remove-types@1.0.0:
+    resolution: {integrity: sha512-G7Hk1Q+UJ5DvlNAoJZObxANkBZGiGdp589rVcTW/tYqJWJ5rwfraSnKSQaETN8Epaytw8J40nS/zC7bcHGv36w==}
 
   request-light@0.7.0:
     resolution: {integrity: sha512-lMbBMrDoxgsyO+yB3sDcrDuX85yYt7sS8BfQd11jtbW/z5ZWgLZRcEGLsLoYw7I0WSUGQBs8CC8ScIxkTX1+6Q==}
@@ -4407,6 +4451,9 @@ packages:
     resolution: {integrity: sha512-VmtB2rFU/GroZ4oL8+ZqXgSA38O6GR8KSIvWmEFv63pQ0G6KaBH9s07PO8XTXP4vI+3UJUEypOfjkGfmSBBR0w==}
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
+
+  route-recognizer@0.3.4:
+    resolution: {integrity: sha512-2+MhsfPhvauN1O8KaXpXAOfR/fwe8dnUXVM+xw7yt40lJRfPVQxV6yryZm0cgRvAj5fMF/mdRZbL2ptwbs5i2g==}
 
   router@2.2.0:
     resolution: {integrity: sha512-nLTrUKm2UyiL7rlhapu/Zl45FwNgkZGaCpZbIHajDYgwlJCOzLSk+cIPAnsEqV955GjILJnKbdQC1nVPz+gAYQ==}
@@ -7079,6 +7126,8 @@ snapshots:
 
   assert-never@1.4.0: {}
 
+  ast-types@0.13.3: {}
+
   astral-regex@2.0.0: {}
 
   async-disk-cache@1.3.5:
@@ -7219,6 +7268,8 @@ snapshots:
   backbone@1.6.1:
     dependencies:
       underscore: 1.13.8
+
+  backburner.js@2.8.0: {}
 
   balanced-match@1.0.2: {}
 
@@ -7961,13 +8012,15 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  ember-cli-deprecation-workflow@3.4.0(ember-source@ember.js):
+  ember-cli-deprecation-workflow@3.4.0(ember-source@file:ember-source-7.1.0-alpha.1.tgz(@glimmer/component@2.1.1)):
     dependencies:
       '@babel/core': 7.29.0
       ember-cli-babel: 8.3.1(@babel/core@7.29.0)
-      ember-source: link:../ember.js
+      ember-source: file:ember-source-7.1.0-alpha.1.tgz(@glimmer/component@2.1.1)
     transitivePeerDependencies:
       - supports-color
+
+  ember-cli-get-component-path-option@1.0.0: {}
 
   ember-cli-is-package-missing@1.0.0: {}
 
@@ -7977,6 +8030,8 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  ember-cli-path-utils@1.0.0: {}
+
   ember-cli-preprocess-registry@5.0.1:
     dependencies:
       broccoli-funnel: 3.0.8
@@ -7985,6 +8040,13 @@ snapshots:
       - supports-color
 
   ember-cli-string-utils@1.1.0: {}
+
+  ember-cli-typescript-blueprint-polyfill@0.1.0:
+    dependencies:
+      chalk: 4.1.2
+      remove-types: 1.0.0
+    transitivePeerDependencies:
+      - supports-color
 
   ember-cli-version-checker@5.1.2:
     dependencies:
@@ -8151,9 +8213,9 @@ snapshots:
       - eslint
       - typescript
 
-  ember-load-initializers@3.0.1(ember-source@ember.js):
+  ember-load-initializers@3.0.1(ember-source@file:ember-source-7.1.0-alpha.1.tgz(@glimmer/component@2.1.1)):
     dependencies:
-      ember-source: link:../ember.js
+      ember-source: file:ember-source-7.1.0-alpha.1.tgz(@glimmer/component@2.1.1)
 
   ember-modifier@4.3.0(@babel/core@7.29.0):
     dependencies:
@@ -8185,6 +8247,38 @@ snapshots:
   ember-resolver@13.2.0: {}
 
   ember-rfc176-data@0.3.18: {}
+
+  ember-router-generator@2.0.0:
+    dependencies:
+      '@babel/parser': 7.29.2
+      '@babel/traverse': 7.29.0
+      recast: 0.18.10
+    transitivePeerDependencies:
+      - supports-color
+
+  ember-source@file:ember-source-7.1.0-alpha.1.tgz(@glimmer/component@2.1.1):
+    dependencies:
+      '@babel/core': 7.29.0
+      '@embroider/addon-shim': 1.10.2
+      '@glimmer/component': 2.1.1
+      '@simple-dom/interface': 1.4.0
+      backburner.js: 2.8.0
+      broccoli-file-creator: 2.1.1
+      chalk: 4.1.2
+      ember-cli-babel: 8.3.1(@babel/core@7.29.0)
+      ember-cli-get-component-path-option: 1.0.0
+      ember-cli-normalize-entity-name: 1.0.0
+      ember-cli-path-utils: 1.0.0
+      ember-cli-string-utils: 1.1.0
+      ember-cli-typescript-blueprint-polyfill: 0.1.0
+      ember-router-generator: 2.0.0
+      inflection: 2.0.1
+      route-recognizer: 0.3.4
+      semver: 7.7.4
+      silent-error: 1.1.1
+      simple-html-tokenizer: 0.5.11
+    transitivePeerDependencies:
+      - supports-color
 
   ember-template-lint@7.9.3:
     dependencies:
@@ -9166,6 +9260,8 @@ snapshots:
 
   imurmurhash@0.1.4: {}
 
+  inflection@2.0.1: {}
+
   inflection@3.0.2: {}
 
   inflight@1.0.6:
@@ -9934,6 +10030,8 @@ snapshots:
 
   printf@0.6.1: {}
 
+  private@0.1.8: {}
+
   proc-log@5.0.0: {}
 
   proc-log@6.1.0: {}
@@ -10032,6 +10130,13 @@ snapshots:
       string_decoder: 1.3.0
       util-deprecate: 1.0.2
 
+  recast@0.18.10:
+    dependencies:
+      ast-types: 0.13.3
+      esprima: 4.0.1
+      private: 0.1.8
+      source-map: 0.6.1
+
   redeyed@1.0.1:
     dependencies:
       esprima: 3.0.0
@@ -10058,6 +10163,15 @@ snapshots:
   regjsparser@0.13.0:
     dependencies:
       jsesc: 3.1.0
+
+  remove-types@1.0.0:
+    dependencies:
+      '@babel/core': 7.29.0
+      '@babel/plugin-syntax-decorators': 7.28.6(@babel/core@7.29.0)
+      '@babel/plugin-transform-typescript': 7.28.6(@babel/core@7.29.0)
+      prettier: 2.8.8
+    transitivePeerDependencies:
+      - supports-color
 
   request-light@0.7.0: {}
 
@@ -10176,6 +10290,8 @@ snapshots:
       '@rollup/rollup-win32-x64-gnu': 4.60.1
       '@rollup/rollup-win32-x64-msvc': 4.60.1
       fsevents: 2.3.3
+
+  route-recognizer@0.3.4: {}
 
   router@2.2.0:
     dependencies:
