@@ -1,5 +1,7 @@
 import BaseRoute from 'use-route-manager/routes/BaseRoute';
 import { LinkTo } from '@ember/routing';
+import { tracked } from '@glimmer/tracking';
+import type Owner from '@ember/owner';
 
 export const LoadingState = <template>
   <div class="pioneer">
@@ -8,6 +10,20 @@ export const LoadingState = <template>
 </template>;
 
 export default class ApplicationRoute extends BaseRoute {
+  @tracked thingy = 'Hello, this is the thingy!';
+
+  constructor(owner: Owner) {
+    super(owner);
+
+    setInterval(() => {
+      if (this.thingy.includes('Hello')) {
+        this.thingy = 'This is a tracked property on the application route.';
+      } else {
+        this.thingy = 'Hello, this is the thingy!';
+      }
+    }, 2000);
+  }
+
   async model() {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     return {
@@ -38,6 +54,8 @@ export default class ApplicationRoute extends BaseRoute {
         this app.</p>
 
       <p>Model: {{if @model.message @model.message "Loading"}}</p>
+
+      {{this.thingy}}
 
       {{outlet}}
     </div>
