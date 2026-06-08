@@ -10,6 +10,7 @@ Router.map(function () {
   // Add route declarations here
   this.route('classic', function () {
     this.route('sub');
+    this.route('get', { path: '/get/:pokemon_id' });
   });
 
   this.route('pokemon', function () {
@@ -20,6 +21,7 @@ Router.map(function () {
         });
       });
     });
+    this.route('get', { path: '/get/:pokemon_id' });
   });
 
   this.route('classic-pokemon', function () {

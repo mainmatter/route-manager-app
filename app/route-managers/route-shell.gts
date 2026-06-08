@@ -7,20 +7,24 @@ import type BaseRoute from 'use-route-manager/routes/BaseRoute';
 // The framework curries the per render args onto this template:
 //
 //   @Component  : the uncurried invokable from getInvokable
-//   @model      : compute ref over routeInfo.context, re-renders when the
-//                 route's enter resolves
+//   @model      : route.currentModel, unused by pioneer (which has no
+//                 controller/currentModel); the model is sourced from the
+//                 routeInfo instead
 //   @controller : eagerly resolved by the outlet helper, unused by pioneer
-//   @routeInfo  : the InternalRouteInfo, exposes the route via `route` and
-//                 the per render enterPromise
+//   @routeInfo  : the InternalRouteInfo, exposes the route via `route`, the
+//                 resolved `context`, and the per render `enterPromise`
 //
-// Loading state is derived from routeInfo.enterPromise: while the promise
-// is pending isLoading is true, once it settles we flip it to false. The
-// instance is recreated whenever the framework rebuilds the curried wrapper
-// (e.g. on a new transition with a new enterPromise), so the loading flag
+// The pioneer manager renders immediately (its getInvokable does not await
+// enter), so the model arrives asynchronously. We read it from the
+// routeInfo's enterPromise: while the promise is pending isLoading is true
+// and we render the route's LoadingState (if any); once it resolves we render
+// the route component with the resolved context as @model. A new transition
+// rebuilds the curried wrapper with a fresh enterPromise, so the loading flag
 // resets naturally.
 
 interface RouteInfoLike {
   route: BaseRoute;
+  context?: unknown;
   enterPromise?: Promise<unknown>;
 }
 
@@ -35,18 +39,26 @@ interface RouteShellSignature {
 
 export default class RouteShell extends Component<RouteShellSignature> {
   @tracked isLoading = true;
+  @tracked model: unknown = undefined;
 
   constructor(owner: Owner, args: RouteShellSignature['Args']) {
     super(owner, args);
+
     const promise = args.routeInfo.enterPromise;
+
+    // No enter promise means there is nothing to wait for, render the route's
+    // already-resolved context immediately.
     if (promise === undefined) {
+      this.model = args.model;
       this.isLoading = false;
       return;
     }
-    const markSettled = () => {
+
+    const settle = (context: unknown) => {
+      this.model = context;
       this.isLoading = false;
     };
-    promise.then(markSettled, markSettled);
+    promise.then(settle, () => settle(undefined));
   }
 
   get LoadingState(): object | undefined {
@@ -58,10 +70,10 @@ export default class RouteShell extends Component<RouteShellSignature> {
       {{#if this.isLoading}}
         <this.LoadingState />
       {{else}}
-        <@Component @model={{@model}} />
+        <@Component @model={{this.model}} />
       {{/if}}
     {{else}}
-      <@Component @model={{@model}} />
+      <@Component @model={{this.model}} />
     {{/if}}
   </template>
 }
