@@ -5,6 +5,7 @@ import { routeCapabilities } from '@ember/routing';
 import type { Destroyable } from '@glimmer/interfaces';
 import RouteShell from 'use-route-manager/route-managers/route-shell';
 import type BaseRoute from 'use-route-manager/routes/BaseRoute';
+import { getOwner } from '@ember/owner';
 
 const routes = import.meta.glob('../routes/**/*.gts');
 
@@ -42,6 +43,25 @@ export class PioneerRouteManager {
     route.bucket = bucket;
     route.manager = this;
     return bucket;
+  }
+
+  getRenderState(bucket: RouteBucket): object | undefined {
+    const route = bucket.route;
+    const wrapper = this.getRouteWrapper();
+    const invokable = bucket.invokable;
+
+    const owner = getOwner(route);
+    assert('Route is unexpectedly missing an owner', owner);
+
+    return {
+      owner,
+      name: bucket.args.name,
+      controller: undefined,
+      model: undefined,
+      wrapper,
+      invokable,
+      bucket,
+    };
   }
 
   getDestroyable(bucket: RouteBucket): Destroyable | null {
@@ -91,6 +111,7 @@ export class PioneerRouteManager {
     console.log(
       `PioneerRouteManager: getInvokable for route "${bucket.args.name}"`
     );
+
     if (bucket.invokable !== undefined) {
       return bucket.invokable;
     }
