@@ -1,7 +1,6 @@
-import type { EnterState, RouteStateBucket } from '@ember/-internals/routing';
+import type { EnterState, RouteStateBucket } from '@ember/routing';
 import { assert } from '@ember/debug';
 import type Owner from '@ember/owner';
-import { setOwner } from '@ember/owner';
 import { routeCapabilities } from '@ember/routing';
 import type { Destroyable } from '@glimmer/interfaces';
 import RouteShell from 'use-route-manager/route-managers/route-shell';
@@ -38,10 +37,8 @@ export class PioneerRouteManager {
   ): RouteBucket {
     // Instantiate the plain class route using `new`, passing the owner.
     // Key difference from ClassicRouteManager, no EmberObject.create().
-    const route = new RouteClass();
-    setOwner(route, this.#owner);
+    const route = new RouteClass(this.#owner);
     const bucket = new RouteBucket(route, args);
-    route._router = this.#owner.lookup('service:router')._router;
     route.bucket = bucket;
     route.manager = this;
     return bucket;
@@ -58,16 +55,13 @@ export class PioneerRouteManager {
   async enter(bucket: RouteBucket, state: EnterState): Promise<unknown> {
     console.log(`PioneerRouteManager: entering route "${bucket.args.name}"`);
     const { to } = state;
+
     const ancestorContext = to.parent
       ? state.getAncestorContext(to.parent)
       : Promise.resolve(undefined);
 
     const context = await bucket.route.model(ancestorContext, to.params ?? {});
-    // The router writes this return value onto routeInfo.context. The
-    // framework's @model arg is a compute ref over routeInfo.context that
-    // re-reads when the outlet state dirties. The wrapper derives loading
-    // state from routeInfo.enterPromise (the promise this very async
-    // function returns), so no bucket flag is needed.
+
     return context;
   }
 

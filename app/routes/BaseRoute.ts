@@ -10,16 +10,17 @@ import type { Constructor } from '@glimmer/component/dist/-private/base-componen
 import type { Arguments } from '@glimmer/interfaces/lib/runtime/arguments';
 import type GlimmerComponent from '@glimmer/component/dist/-private/component';
 import { setComponentManager } from '@ember/component';
-import type EmberRouter from '@ember/routing/router';
+import { setOwner } from '@ember/owner';
 
 export default class BaseRoute {
-  declare _router: EmberRouter;
   declare bucket: RouteBucket;
   declare manager: PioneerRouteManager;
 
   LoadingState?: object;
 
-  constructor(protected owner: Owner) {}
+  constructor(protected owner: Owner) {
+    setOwner(this, owner);
+  }
 
   model(
     _parentContext: Promise<unknown>,
