@@ -1,0 +1,42 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable warp-drive/no-external-request-patterns */
+import BaseRoute from 'use-route-manager/routes/BaseRoute';
+
+export const LoadingState = <template>
+  <div class="pioneer">
+    <h3>Loading Pikachu...</h3>
+  </div>
+</template>;
+
+export default class GetRoute extends BaseRoute {
+  async model(
+    _parentContext: Promise<unknown>,
+    params: Record<string, unknown>
+  ) {
+    const response = await fetch(
+      `https://pokeapi.co/api/v2/pokemon/${params.pokemon_id}`
+    );
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const data = await response.json();
+
+    return Promise.resolve({
+      message: 'Hello from the pokemon model!',
+      pokemon: data,
+    });
+  }
+
+  <template>
+    <div class="pioneer">
+
+      <h1>{{@model.pokemon.name}}</h1>
+
+      <img
+        src={{@model.pokemon.sprites.front_default}}
+        alt={{@model.pokemon.name}}
+      />
+
+      {{outlet}}
+    </div>
+  </template>
+}

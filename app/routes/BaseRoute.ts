@@ -1,29 +1,65 @@
+import { capabilities } from '@ember/component';
 import type Owner from '@ember/owner';
-import { setOwner } from '@ember/owner';
 import { setRouteManager } from '@ember/routing';
-import type EmberRouter from '@ember/routing/router';
+import { destroy, registerDestructor } from '@glimmer/destroyable';
 import {
   PioneerRouteManager,
-  type RouteBucket,
+  RouteBucket,
 } from 'use-route-manager/route-managers/pioneer-manager';
+import type { Constructor } from '@glimmer/component/dist/-private/base-component-manager';
+import type { Arguments } from '@glimmer/interfaces/lib/runtime/arguments';
+import type GlimmerComponent from '@glimmer/component/dist/-private/component';
+import { setComponentManager } from '@ember/component';
+import { setOwner } from '@ember/owner';
 
 export default class BaseRoute {
-  _router!: EmberRouter;
-  _stashNames() {} // used by ember/router for QP's but not relevant to this demo
+  declare bucket: RouteBucket;
+  declare manager: PioneerRouteManager;
 
-  manager!: PioneerRouteManager;
-  bucket!: RouteBucket;
+  LoadingState?: object;
 
-  // eslint-disable-next-line @typescript-eslint/require-await
-  async model(parentContext: Promise<unknown>): Promise<unknown> {
-    return null;
+  constructor(protected owner: Owner) {
+    setOwner(this, owner);
   }
 
-  constructor(owner: Owner) {
-    setOwner(this, owner);
-    // eslint-disable-next-line ember/no-private-routing-service
-    const router = owner.lookup('router:main');
-    this._router = router as EmberRouter;
+  model(
+    _parentContext: Promise<unknown>,
+    _params: Record<string, unknown>
+  ): unknown {
+    return Promise.resolve();
   }
 }
+
 setRouteManager((owner) => new PioneerRouteManager(owner), BaseRoute);
+
+class RouteShellComponentManager {
+  capabilities = capabilities('3.13');
+
+  private owner: Owner;
+
+  constructor(owner: Owner) {
+    this.owner = owner;
+  }
+
+  createComponent(
+    ComponentClass: Constructor<GlimmerComponent>,
+    args: Arguments
+  ): GlimmerComponent {
+    const component = new ComponentClass(this.owner, args.named);
+    registerDestructor(component, () => component.willDestroy());
+    return component;
+  }
+
+  getContext(component: GlimmerComponent): GlimmerComponent {
+    return component;
+  }
+
+  destroyComponent(component: GlimmerComponent): void {
+    destroy(component);
+  }
+}
+
+setComponentManager(
+  (owner: Owner) => new RouteShellComponentManager(owner),
+  BaseRoute
+);
