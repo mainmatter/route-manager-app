@@ -2650,7 +2650,7 @@ packages:
     engines: {node: 8.* || 10.* || >= 12}
 
   ember-source@file:ember-source-7.3.0-alpha.1.tgz:
-    resolution: {integrity: sha512-JCsfS0SKJ5HTPw8T8DFwXM7o2dtk67xSJQKIb/zWWwEsY1GxQs1+EY5LZrkhPHgfUBH59GK2SdKlPodcrIfs5g==, tarball: file:ember-source-7.3.0-alpha.1.tgz}
+    resolution: {integrity: sha512-CkMIFVsd5uSPyI3+DpSNhuVcPOlQNC/6hKd8K5+dmXczNhtRjXa8xEErl/Aq5QaE3MwUBZBT845w6M+NB+0GBw==, tarball: file:ember-source-7.3.0-alpha.1.tgz}
     version: 7.3.0-alpha.1
     engines: {node: '>= 20.19'}
     peerDependencies:

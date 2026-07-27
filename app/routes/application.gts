@@ -19,9 +19,9 @@ export default class ApplicationRoute extends BaseRoute {
     <div class="pioneer">
       <LinkTo @route="index">Home</LinkTo>
       |
-      <LinkTo @route="classic">Classic Route</LinkTo>
+      <LinkTo @route="demo">Demo Route</LinkTo>
       |
-      <LinkTo @route="classic.sub">Go to Sub Route</LinkTo>
+      <LinkTo @route="demo.sub">Go to Sub Route</LinkTo>
       |
       <LinkTo @route="pokemon">Go to Pokemon Route</LinkTo>
       |
