@@ -31,15 +31,15 @@ export default class ApplicationRoute extends BaseRoute {
   <template>
     <div class="pioneer">
 
-      <h1>{{@model.pokemon.name}}</h1>
+      <h1>{{@context.pokemon.name}}</h1>
 
-      {{#if @model.parent}}
-        <h2>My parent is {{@model.parent.pokemon.name}}</h2>
+      {{#if @context.parent}}
+        <h2>My parent is {{@context.parent.pokemon.name}}</h2>
       {{/if}}
 
       <img
-        src={{@model.pokemon.sprites.front_default}}
-        alt={{@model.pokemon.name}}
+        src={{@context.pokemon.sprites.front_default}}
+        alt={{@context.pokemon.name}}
       />
 
       {{outlet}}

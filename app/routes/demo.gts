@@ -17,7 +17,7 @@ export default class DemoRoute extends BaseRoute {
     <div class="pioneer">
       <h2 data-test-demo>Hello from the demo route!</h2>
 
-      <p>Model data is passed in as expected: {{@model.name}}</p>
+      <p>Model data is passed in as expected: {{@context.name}}</p>
       <p>No generated controller:
         {{if @controller "Unexpected" "Undefined"}}</p>
 

@@ -24,11 +24,11 @@ export default class ClassicPokemonSquirtleRoute extends BaseRoute {
 
   <template>
     <div class="classic">
-      <h1>{{@model.pokemon.name}}</h1>
+      <h1>{{@context.pokemon.name}}</h1>
 
       <img
-        src={{@model.pokemon.sprites.front_default}}
-        alt={{@model.pokemon.name}}
+        src={{@context.pokemon.sprites.front_default}}
+        alt={{@context.pokemon.name}}
       />
 
       {{outlet}}
