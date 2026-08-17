@@ -27,7 +27,7 @@ export default class ApplicationRoute extends BaseRoute {
       <h1>Pokemon be loaded</h1>
 
       <p>
-        {{JSON.stringify @model.pokemon null 2}}
+        {{JSON.stringify @context.pokemon null 2}}
       </p>
 
       {{outlet}}

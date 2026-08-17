@@ -1,6 +1,5 @@
 import { makeRouteTemplate } from '@ember/-internals/glimmer';
 import type { InternalOwner } from '@ember/-internals/owner';
-import templateOnly from '@ember/component/template-only';
 import { assert } from '@ember/debug';
 import type Owner from '@ember/owner';
 import type {
@@ -9,48 +8,37 @@ import type {
   RouteStateBucket,
 } from '@ember/routing';
 import { routeCapabilities } from '@ember/routing';
-import { precompileTemplate } from '@ember/template-compilation';
-import { getComponentTemplate, setComponentTemplate } from '@glimmer/manager';
+import { getComponentTemplate } from '@glimmer/manager';
 import { getOwner } from '@glimmer/owner';
-import { createComputeRef } from '@glimmer/reference';
 import { tracked } from '@glimmer/tracking';
+import type { ComponentLike } from '@glint/template';
+import { PioneerOutlet } from 'use-route-manager/route-managers/pioneer-outlet';
 import type BaseRoute from 'use-route-manager/routes/BaseRoute';
 
 const routes = import.meta.glob('../routes/**/*.gts');
 
-// Wrapper template-only component that switches between the route's loading
-// state and its main template based on @isLoading. The route's resolved invokable
-// is passed in as @Component and the optional loading template as
-// @bucket.LoadingState. @model is forwarded to the route component once loading is done.
-const RouteShell = templateOnly();
-setComponentTemplate(
-  precompileTemplate(
-    `
-    {{#if @bucket.LoadingState}}
-      {{#if @bucket.isLoading}}
-        <@bucket.LoadingState />
-      {{else}}
-        <@Component @model={{@context}} @outlet={{@outlet}} />
-      {{/if}}
-    {{else}}
-      <@Component @model={{@context}} @outlet={{@outlet}} />
-     {{/if}}`,
-    { strictMode: true }
-  ),
-  RouteShell
-);
+/** What a route renders: its own template, or its `LoadingState`. */
+export type RouteComponent = ComponentLike<{
+  Args: { context: unknown; outlet: unknown };
+}>;
 
 export class RouteBucket implements RouteStateBucket {
   route: BaseRoute;
   args: CreateRouteArgs;
 
-  invokable: object | undefined = undefined;
+  @tracked invokable: RouteComponent | undefined = undefined;
 
-  LoadingState: object | undefined = undefined;
-
-  @tracked context: unknown = undefined;
+  @tracked LoadingState: RouteComponent | undefined = undefined;
 
   @tracked isLoading = true;
+
+  get renderable(): RouteComponent | undefined {
+    if (this.LoadingState !== undefined && this.isLoading) {
+      return this.LoadingState;
+    }
+
+    return this.invokable;
+  }
 
   constructor(route: BaseRoute, args: CreateRouteArgs) {
     this.route = route;
@@ -88,27 +76,19 @@ export class PioneerRouteManager {
     return bucket.route;
   }
 
-  getRouteWrapper(): object {
-    return RouteShell;
-  }
-
   getRenderState(bucket: RouteBucket) {
     return {
       owner: this.#owner,
       name: bucket.args.name,
-      controller: undefined,
-      model: bucket.context,
-      wrapper: this.getRouteWrapper(),
       invokable: bucket.invokable,
-      bucket,
-      // @TODO: This will likely be gone. For now it's used here in classic as the "@model stability" provider
-      produceContext: () => createComputeRef(() => bucket.context),
     };
   }
 
+  getRouteWrapper(): object {
+    return PioneerOutlet;
+  }
+
   willEnter(bucket: RouteBucket): void {
-    // Mark loading at the start of every enter so re-entries (same route, new
-    // params) flip the wrapper back to the loading state.
     bucket.isLoading = true;
     console.log(`PioneerRouteManager: will enter route "${bucket.args.name}"`);
   }
@@ -127,9 +107,9 @@ export class PioneerRouteManager {
         : Promise.resolve(undefined);
       console.log('ancestor promise', parentContext);
 
-      const context = await bucket.route.model(parentContext);
-      bucket.context = context;
-      return context;
+      // The framework puts what this resolves with on the route info and
+      // hands it to the wrapper as `@context`.
+      return await bucket.route.model(parentContext);
     } finally {
       bucket.isLoading = false;
     }
@@ -151,7 +131,10 @@ export class PioneerRouteManager {
     console.log(`PioneerRouteManager: did exit route "${_bucket.args.name}"`);
   }
 
-  async getInvokable(bucket: RouteBucket): Promise<object | undefined> {
+  // Deliberately ignores the `enterPromise` the router passes: the level mounts
+  // as soon as the route module has loaded, and `renderable` shows the
+  // `LoadingState` until `enter` settles.
+  async getInvokable(bucket: RouteBucket): Promise<object> {
     console.log(
       `PioneerRouteManager: getInvokable for route "${bucket.args.name}"`
     );
@@ -165,7 +148,7 @@ export class PioneerRouteManager {
     // Routes that omit it will render the route template immediately.
     const routePath = `../routes/${bucket.args.name.replace(/\./g, '/')}.gts`;
     const routeModule = (await routes[routePath]?.()) as
-      | { LoadingState?: object; default: object }
+      | { LoadingState?: RouteComponent; default: object }
       | undefined;
     const LoadingState = routeModule?.LoadingState;
     const RouteClass = routeModule?.default;
@@ -187,10 +170,14 @@ export class PioneerRouteManager {
     }
 
     const template = templateFactory(owner);
-    const RouteComponent = makeRouteTemplate(owner, bucket.args.name, template);
+    const routeComponent = makeRouteTemplate(
+      owner,
+      bucket.args.name,
+      template
+    ) as unknown as RouteComponent;
 
     bucket.LoadingState = LoadingState;
-    bucket.invokable = RouteComponent;
-    return RouteComponent;
+    bucket.invokable = routeComponent;
+    return routeComponent;
   }
 }

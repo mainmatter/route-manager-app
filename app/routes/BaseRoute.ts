@@ -9,7 +9,6 @@ import {
 
 export default class BaseRoute {
   _router!: EmberRouter;
-  _stashNames() {} // used by ember/router for QP's but not relevant to this demo
 
   manager!: PioneerRouteManager;
   bucket!: RouteBucket;
