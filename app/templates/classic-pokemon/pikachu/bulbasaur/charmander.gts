@@ -1,5 +1,8 @@
 <template>
-  <div class="classic">
+  <div
+    class="classic"
+    data-test-route-level="classic-pokemon.pikachu.bulbasaur.charmander"
+  >
     <h1>{{@model.pokemon.name}}</h1>
 
     <img

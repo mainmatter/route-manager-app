@@ -1,5 +1,5 @@
 <template>
-  <div class="classic">
+  <div class="classic" data-test-route-level="classic-pokemon">
     <h1>Classic Pokemon be loaded</h1>
 
     <p>

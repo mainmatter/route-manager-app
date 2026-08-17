@@ -1,5 +1,5 @@
 <template>
-  <div class="classic">
+  <div class="classic" data-test-route-level="classic">
     <h2>Hello from a Classic Route!</h2>
     <p>Zebra striping of route managers works!</p>
 

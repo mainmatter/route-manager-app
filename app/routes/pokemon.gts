@@ -22,7 +22,7 @@ export default class ApplicationRoute extends BaseRoute {
   }
 
   <template>
-    <div class="pioneer">
+    <div class="pioneer" data-test-route-level="pokemon">
 
       <h1>Pokemon be loaded</h1>
 

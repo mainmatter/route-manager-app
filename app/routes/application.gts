@@ -16,7 +16,7 @@ export default class ApplicationRoute extends BaseRoute {
   }
 
   <template>
-    <div class="pioneer">
+    <div class="pioneer" data-test-route-level="application">
       <LinkTo @route="index">Home</LinkTo>
       |
       <LinkTo @route="classic">Classic Route</LinkTo>

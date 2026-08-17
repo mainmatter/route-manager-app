@@ -21,7 +21,10 @@ export default class ApplicationRoute extends BaseRoute {
   }
 
   <template>
-    <div class="pioneer">
+    <div
+      class="pioneer"
+      data-test-route-level="pokemon.pikachu.bulbasaur.charmander.squirtle"
+    >
 
       <h1>{{@model.pokemon.name}}</h1>
 
