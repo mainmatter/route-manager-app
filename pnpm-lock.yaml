@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  ember-source: file:ember-source-7.3.0-alpha.1.tgz
+  ember-source: file:ember-source-7.4.0-alpha.1.tgz
 
 importers:
 
@@ -103,10 +103,10 @@ importers:
         version: 8.3.1(@babel/core@7.29.0)
       ember-cli-deprecation-workflow:
         specifier: ^3.4.0
-        version: 3.4.0(ember-source@file:ember-source-7.3.0-alpha.1.tgz(@glimmer/component@2.1.1))
+        version: 3.4.0(ember-source@file:ember-source-7.4.0-alpha.1.tgz(@glimmer/component@2.1.1))
       ember-load-initializers:
         specifier: ^3.0.1
-        version: 3.0.1(ember-source@file:ember-source-7.3.0-alpha.1.tgz(@glimmer/component@2.1.1))
+        version: 3.0.1(ember-source@file:ember-source-7.4.0-alpha.1.tgz(@glimmer/component@2.1.1))
       ember-modifier:
         specifier: ^4.3.0
         version: 4.3.0(@babel/core@7.29.0)
@@ -120,8 +120,8 @@ importers:
         specifier: ^13.1.1
         version: 13.2.0
       ember-source:
-        specifier: file:ember-source-7.3.0-alpha.1.tgz
-        version: file:ember-source-7.3.0-alpha.1.tgz(@glimmer/component@2.1.1)
+        specifier: file:ember-source-7.4.0-alpha.1.tgz
+        version: file:ember-source-7.4.0-alpha.1.tgz(@glimmer/component@2.1.1)
       ember-template-lint:
         specifier: ^7.9.3
         version: 7.9.3
@@ -2662,9 +2662,9 @@ packages:
     resolution: {integrity: sha512-89oVHVJwmLDvGvAUWgS87KpBoRhy3aZ6U0Ql6HOmU4TrPkyaa8pM0W81wj9cIwjYprcQtN9EwzZMHnq46+oUyw==}
     engines: {node: 8.* || 10.* || >= 12}
 
-  ember-source@file:ember-source-7.3.0-alpha.1.tgz:
-    resolution: {integrity: sha512-ICWzP9QGzcDmCVO3/9jKq7m13zqvKWHFzpJO/7EM6WRXlHPRO/zZIjRuzyBGjiR2G2ItxzRKD5vmZ9It0oCehg==, tarball: file:ember-source-7.3.0-alpha.1.tgz}
-    version: 7.3.0-alpha.1
+  ember-source@file:ember-source-7.4.0-alpha.1.tgz:
+    resolution: {integrity: sha512-aLiiJEqbrKSUVAOLFLBIcbtohhdzSUL8yh4v7QsmrnI2A2cgdxzxV/ulh2sL4UVpYCZpn44Skv36NgRk0Nhi1A==, tarball: file:ember-source-7.4.0-alpha.1.tgz}
+    version: 7.4.0-alpha.1
     engines: {node: '>= 20.19'}
     peerDependencies:
       '@glimmer/component': '>= 1.1.2'
@@ -8025,11 +8025,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  ember-cli-deprecation-workflow@3.4.0(ember-source@file:ember-source-7.3.0-alpha.1.tgz(@glimmer/component@2.1.1)):
+  ember-cli-deprecation-workflow@3.4.0(ember-source@file:ember-source-7.4.0-alpha.1.tgz(@glimmer/component@2.1.1)):
     dependencies:
       '@babel/core': 7.29.0
       ember-cli-babel: 8.3.1(@babel/core@7.29.0)
-      ember-source: file:ember-source-7.3.0-alpha.1.tgz(@glimmer/component@2.1.1)
+      ember-source: file:ember-source-7.4.0-alpha.1.tgz(@glimmer/component@2.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -8226,9 +8226,9 @@ snapshots:
       - eslint
       - typescript
 
-  ember-load-initializers@3.0.1(ember-source@file:ember-source-7.3.0-alpha.1.tgz(@glimmer/component@2.1.1)):
+  ember-load-initializers@3.0.1(ember-source@file:ember-source-7.4.0-alpha.1.tgz(@glimmer/component@2.1.1)):
     dependencies:
-      ember-source: file:ember-source-7.3.0-alpha.1.tgz(@glimmer/component@2.1.1)
+      ember-source: file:ember-source-7.4.0-alpha.1.tgz(@glimmer/component@2.1.1)
 
   ember-modifier@4.3.0(@babel/core@7.29.0):
     dependencies:
@@ -8269,7 +8269,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  ember-source@file:ember-source-7.3.0-alpha.1.tgz(@glimmer/component@2.1.1):
+  ember-source@file:ember-source-7.4.0-alpha.1.tgz(@glimmer/component@2.1.1):
     dependencies:
       '@babel/core': 7.29.0
       '@embroider/addon-shim': 1.10.2

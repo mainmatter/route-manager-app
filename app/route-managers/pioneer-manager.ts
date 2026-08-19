@@ -1,6 +1,5 @@
 import { makeRouteTemplate } from '@ember/-internals/glimmer';
 import type { InternalOwner } from '@ember/-internals/owner';
-import { assert } from '@ember/debug';
 import type Owner from '@ember/owner';
 import type {
   CreateRouteArgs,
@@ -24,6 +23,7 @@ export type RouteComponent = ComponentLike<{
 
 export class RouteBucket implements RouteStateBucket {
   route: BaseRoute;
+  RouteClass: typeof BaseRoute;
   args: CreateRouteArgs;
 
   @tracked invokable: RouteComponent | undefined = undefined;
@@ -40,14 +40,19 @@ export class RouteBucket implements RouteStateBucket {
     return this.invokable;
   }
 
-  constructor(route: BaseRoute, args: CreateRouteArgs) {
+  constructor(
+    route: BaseRoute,
+    RouteClass: typeof BaseRoute,
+    args: CreateRouteArgs
+  ) {
     this.route = route;
+    this.RouteClass = RouteClass;
     this.args = args;
   }
 }
 
 export class PioneerRouteManager {
-  capabilities = routeCapabilities('1.0');
+  capabilities = routeCapabilities('1.0', { awaitEnter: false });
 
   #owner: Owner;
 
@@ -62,9 +67,10 @@ export class PioneerRouteManager {
     // Instantiate the plain class route using `new`, passing the owner.
     // Key difference from ClassicRouteManager — no EmberObject.create().
     const route = new RouteClass(this.#owner);
-    const bucket = new RouteBucket(route, args);
+    const bucket = new RouteBucket(route, RouteClass, args);
     route.bucket = bucket;
     route.manager = this;
+    void this.#loadLoadingState(bucket);
     return bucket;
   }
 
@@ -74,14 +80,6 @@ export class PioneerRouteManager {
 
   getDestroyable(bucket: RouteBucket): object | null {
     return bucket.route;
-  }
-
-  getRenderState(bucket: RouteBucket) {
-    return {
-      owner: this.#owner,
-      name: bucket.args.name,
-      invokable: bucket.invokable,
-    };
   }
 
   getRouteWrapper(): object {
@@ -131,37 +129,16 @@ export class PioneerRouteManager {
     console.log(`PioneerRouteManager: did exit route "${_bucket.args.name}"`);
   }
 
-  // Deliberately ignores the `enterPromise` the router passes: the level mounts
-  // as soon as the route module has loaded, and `renderable` shows the
-  // `LoadingState` until `enter` settles.
-  async getInvokable(bucket: RouteBucket): Promise<object> {
+  getInvokable(bucket: RouteBucket): object {
     console.log(
       `PioneerRouteManager: getInvokable for route "${bucket.args.name}"`
     );
-    if (bucket.invokable !== undefined) {
-      return bucket.invokable;
-    }
 
     const owner = getOwner(bucket.route)! as InternalOwner;
 
-    // Pull the named LoadingState export off the route module if it has one.
-    // Routes that omit it will render the route template immediately.
-    const routePath = `../routes/${bucket.args.name.replace(/\./g, '/')}.gts`;
-    const routeModule = (await routes[routePath]?.()) as
-      | { LoadingState?: RouteComponent; default: object }
-      | undefined;
-    const LoadingState = routeModule?.LoadingState;
-    const RouteClass = routeModule?.default;
-
-    assert(
-      `PioneerRouteManager: failed to load route class for "${bucket.args.name}". ` +
-        `Make sure the route file is named correctly and exports a route class as default.`,
-      RouteClass
-    );
-
     // Retrieve the template factory from the co-located .gts class and wrap it
     // in a RouteTemplate so it can be rendered as a component.
-    const templateFactory = getComponentTemplate(RouteClass);
+    const templateFactory = getComponentTemplate(bucket.RouteClass);
     if (!templateFactory) {
       throw new Error(
         `PioneerRouteManager: no template found for route "${bucket.args.name}". ` +
@@ -170,14 +147,31 @@ export class PioneerRouteManager {
     }
 
     const template = templateFactory(owner);
-    const routeComponent = makeRouteTemplate(
+    return makeRouteTemplate(
       owner,
       bucket.args.name,
       template
     ) as unknown as RouteComponent;
+  }
 
-    bucket.LoadingState = LoadingState;
-    bucket.invokable = routeComponent;
-    return routeComponent;
+  // Pull the named LoadingState export off the route module if it has one.
+  // Routes that omit it will render the route template immediately.
+  async #loadLoadingState(bucket: RouteBucket): Promise<void> {
+    const routePath = `../routes/${bucket.args.name.replace(/\./g, '/')}.gts`;
+    const loader = routes[routePath];
+
+    if (!loader) {
+      return;
+    }
+
+    const routeModule = (await loader()) as
+      | { LoadingState?: RouteComponent }
+      | undefined;
+
+    bucket.LoadingState = routeModule?.LoadingState;
+    console.log(
+      `PioneerRouteManager: loading state for route "${bucket.args.name}" is ` +
+        `${bucket.LoadingState ? 'available' : 'not defined'}`
+    );
   }
 }
