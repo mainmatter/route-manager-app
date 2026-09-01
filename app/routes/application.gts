@@ -16,7 +16,7 @@ export default class ApplicationRoute extends BaseRoute {
   }
 
   <template>
-    <div class="pioneer">
+    <div class="pioneer" data-test-route-level="application">
       <LinkTo @route="index">Home</LinkTo>
       |
       <LinkTo @route="classic">Classic Route</LinkTo>
@@ -37,7 +37,7 @@ export default class ApplicationRoute extends BaseRoute {
       <p>This route is rendered using a route manager entirely defined inside
         this app.</p>
 
-      <p>Model: {{if @model.message @model.message "Loading"}}</p>
+      <p>Model: {{if @context.message @context.message "Loading"}}</p>
 
       {{outlet}}
     </div>

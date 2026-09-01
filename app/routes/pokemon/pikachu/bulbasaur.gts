@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable warp-drive/no-external-request-patterns */
-import BaseRoute from 'use-route-manager/routes/BaseRoute';
+import BaseRoute, {
+  type RouteModelArgs,
+} from 'use-route-manager/routes/BaseRoute';
+import { loadPokemon } from 'use-route-manager/utils/pokemon-api';
 
 export const LoadingState = <template>
   <div class="pioneer">
@@ -9,26 +9,22 @@ export const LoadingState = <template>
   </div>
 </template>;
 
-export default class ApplicationRoute extends BaseRoute {
-  async model() {
-    const response = await fetch('https://pokeapi.co/api/v2/pokemon/bulbasaur');
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const data = await response.json();
-
+export default class BulbasaurRoute extends BaseRoute {
+  async model({ signal }: RouteModelArgs) {
     return {
       message: 'Hello from the bulbasaur model!',
-      pokemon: data,
+      pokemon: await loadPokemon('bulbasaur', signal),
     };
   }
 
   <template>
-    <div class="pioneer">
+    <div class="pioneer" data-test-route-level="pokemon.pikachu.bulbasaur">
 
-      <h1>{{@model.pokemon.name}}</h1>
+      <h1>{{@context.pokemon.name}}</h1>
 
       <img
-        src={{@model.pokemon.sprites.front_default}}
-        alt={{@model.pokemon.name}}
+        src={{@context.pokemon.sprites.front_default}}
+        alt={{@context.pokemon.name}}
       />
 
       {{outlet}}
