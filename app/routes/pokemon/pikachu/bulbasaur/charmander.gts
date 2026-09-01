@@ -1,6 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable warp-drive/no-external-request-patterns */
-import BaseRoute from 'use-route-manager/routes/BaseRoute';
+import BaseRoute, {
+  type RouteModelArgs,
+} from 'use-route-manager/routes/BaseRoute';
+import { loadPokemon } from 'use-route-manager/utils/pokemon-api';
 
 export const LoadingState = <template>
   <div class="pioneer">
@@ -8,23 +9,13 @@ export const LoadingState = <template>
   </div>
 </template>;
 
-export default class ApplicationRoute extends BaseRoute {
-  async model(parentContext: Promise<unknown>) {
-    const response = await fetch(
-      'https://pokeapi.co/api/v2/pokemon/charmander'
-    );
-
-    const parentContextData = await parentContext;
-    console.log('charmander route has bulbasaur context', parentContextData);
-
-    const data = await response.json();
-
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
+export default class CharmanderRoute extends BaseRoute {
+  async model({ parent, signal }: RouteModelArgs) {
+    const parentContext = await parent;
     return {
       message: 'Hello from the pokemon model!',
-      pokemon: data,
-      parent: parentContextData,
+      pokemon: await loadPokemon('charmander', signal),
+      parent: parentContext,
     };
   }
 

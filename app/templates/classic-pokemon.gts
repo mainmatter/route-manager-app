@@ -1,4 +1,13 @@
-<template>
+import type { TOC } from '@ember/component/template-only';
+import type { PokemonSummary } from 'use-route-manager/utils/pokemon-api';
+
+interface ClassicPokemonTemplateSignature {
+  Args: {
+    model: { pokemon: PokemonSummary[] };
+  };
+}
+
+const ClassicPokemonTemplate: TOC<ClassicPokemonTemplateSignature> = <template>
   <div class="classic" data-test-route-level="classic-pokemon">
     <h1>Classic Pokemon be loaded</h1>
 
@@ -8,4 +17,6 @@
 
     {{outlet}}
   </div>
-</template>
+</template>;
+
+export default ClassicPokemonTemplate;

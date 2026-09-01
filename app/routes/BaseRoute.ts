@@ -1,28 +1,22 @@
 import type Owner from '@ember/owner';
 import { setOwner } from '@ember/owner';
 import { setRouteManager } from '@ember/routing';
-import type EmberRouter from '@ember/routing/router';
-import {
-  PioneerRouteManager,
-  type RouteBucket,
-} from 'use-route-manager/route-managers/pioneer-manager';
+import { PioneerRouteManager } from 'use-route-manager/route-managers/pioneer-manager';
+
+export interface RouteModelArgs {
+  parent: Promise<unknown>;
+  signal: AbortSignal;
+}
 
 export default class BaseRoute {
-  _router!: EmberRouter;
-
-  manager!: PioneerRouteManager;
-  bucket!: RouteBucket;
-
-  // eslint-disable-next-line @typescript-eslint/require-await
-  async model(parentContext: Promise<unknown>): Promise<unknown> {
-    return null;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  model(_args: RouteModelArgs): Promise<unknown> {
+    return Promise.resolve(null);
   }
 
   constructor(owner: Owner) {
     setOwner(this, owner);
-    // eslint-disable-next-line ember/no-private-routing-service
-    const router = owner.lookup('router:main');
-    this._router = router as EmberRouter;
   }
 }
+
 setRouteManager((owner) => new PioneerRouteManager(owner), BaseRoute);
