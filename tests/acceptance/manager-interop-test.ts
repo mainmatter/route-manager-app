@@ -168,7 +168,7 @@ module('Acceptance | manager interop', function (hooks) {
     pokemonApi.restore();
   });
 
-  test('the route wrapper renders its loading state before publication', async function (assert) {
+  test('the manager enters a custom loading substate before publication', async function (assert) {
     const visitPromise = visit('/');
 
     await waitUntil(() =>
@@ -176,13 +176,13 @@ module('Acceptance | manager interop', function (hooks) {
     );
     assert.true(
       getRootElement().textContent?.includes('Loading The Application...'),
-      'the custom loading state rendered while enter was pending'
+      'the custom loading substate rendered while enter was pending'
     );
 
     await visitPromise;
     assert.false(
       getRootElement().textContent?.includes('Loading The Application...'),
-      'the published route component replaced the loading state'
+      'the published route component replaced the loading substate'
     );
   });
 

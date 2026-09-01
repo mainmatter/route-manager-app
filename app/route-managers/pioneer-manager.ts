@@ -1,6 +1,9 @@
 import { makeRouteTemplate } from '@ember/-internals/glimmer';
 import type { InternalOwner } from '@ember/-internals/owner';
+import { isDestroyed, isDestroying } from '@ember/destroyable';
 import type Owner from '@ember/owner';
+import type RouteInfo from '@ember/routing/route-info';
+import type EmberRouter from '@ember/routing/router';
 import type {
   CreateRouteArgs,
   EnterState,
@@ -8,8 +11,8 @@ import type {
   RouteStateBucket,
 } from '@ember/routing';
 import { routeCapabilities } from '@ember/routing';
+import { cancel, scheduleOnce } from '@ember/runloop';
 import { getComponentTemplate } from '@glimmer/manager';
-import { tracked } from '@glimmer/tracking';
 import type { ComponentLike } from '@glint/template';
 import { PioneerOutlet } from 'use-route-manager/route-managers/pioneer-outlet';
 import type BaseRoute from 'use-route-manager/routes/BaseRoute';
@@ -22,11 +25,13 @@ interface RouteModule {
   LoadingState?: RouteComponent;
 }
 
+interface LoadingAttempt {
+  pending: boolean;
+}
+
 const routeModules = import.meta.glob<RouteModule>('../routes/**/*.gts');
 
 export class RouteBucket implements RouteStateBucket {
-  @tracked loadingState: RouteComponent | undefined;
-
   constructor(
     readonly route: BaseRoute,
     readonly routeClass: typeof BaseRoute,
@@ -37,24 +42,18 @@ export class RouteBucket implements RouteStateBucket {
 export class PioneerRouteManager implements RouteManager<RouteBucket> {
   readonly capabilities = routeCapabilities('1.0');
 
-  readonly #owner: Owner;
+  readonly #owner: InternalOwner;
+  readonly #loadingStates = new Map<string, RouteComponent>();
 
   constructor(owner: Owner) {
-    this.#owner = owner;
+    this.#owner = owner as InternalOwner;
   }
 
   createRoute(
     routeClass: typeof BaseRoute,
     args: CreateRouteArgs
   ): RouteBucket {
-    const bucket = new RouteBucket(
-      new routeClass(this.#owner),
-      routeClass,
-      args
-    );
-
-    void this.#loadLoadingState(bucket);
-    return bucket;
+    return new RouteBucket(new routeClass(this.#owner), routeClass, args);
   }
 
   getDestroyable(bucket: RouteBucket): object | null {
@@ -83,7 +82,21 @@ export class PioneerRouteManager implements RouteManager<RouteBucket> {
       ? state.getAncestorPromise(routeInfo.parent)
       : Promise.resolve(undefined);
 
-    return await bucket.route.model({ parent, signal: state.signal });
+    const loading = { pending: true };
+    const showLoadingSubstate = () =>
+      void this.#showLoadingSubstate(bucket, routeInfo, state, loading);
+    // Match classic routes: only show a loading substate when work survives
+    // the current router-transition queue.
+    // eslint-disable-next-line ember/no-runloop
+    const loadingTimer = scheduleOnce('routerTransitions', showLoadingSubstate);
+
+    try {
+      return await bucket.route.model({ parent, signal: state.signal });
+    } finally {
+      loading.pending = false;
+      // eslint-disable-next-line ember/no-runloop
+      cancel(loadingTimer);
+    }
   }
 
   didEnter(bucket: RouteBucket): void {
@@ -107,7 +120,10 @@ export class PioneerRouteManager implements RouteManager<RouteBucket> {
       `PioneerRouteManager: getInvokable for route "${bucket.args.name}"`
     );
 
-    const owner = this.#owner as InternalOwner;
+    const loadingState = this.#loadingStates.get(bucket.args.name);
+    if (loadingState) {
+      return Promise.resolve(loadingState);
+    }
 
     // Retrieve the template factory from the co-located .gts class and wrap it
     // in a RouteTemplate so it can be rendered as a component.
@@ -119,25 +135,73 @@ export class PioneerRouteManager implements RouteManager<RouteBucket> {
       );
     }
 
-    const template = templateFactory(owner);
+    const template = templateFactory(this.#owner);
     return Promise.resolve(
       makeRouteTemplate(
-        owner,
+        this.#owner,
         bucket.args.name,
         template
       ) as unknown as RouteComponent
     );
   }
 
-  async #loadLoadingState(bucket: RouteBucket): Promise<void> {
+  async #showLoadingSubstate(
+    bucket: RouteBucket,
+    routeInfo: RouteInfo,
+    state: EnterState,
+    loading: LoadingAttempt
+  ): Promise<void> {
     const routePath = `../routes/${bucket.args.name.replace(/\./g, '/')}.gts`;
     const loadRouteModule = routeModules[routePath];
-
     if (!loadRouteModule) {
       return;
     }
 
-    const routeModule = await loadRouteModule();
-    bucket.loadingState = routeModule.LoadingState;
+    const ancestors = [];
+    for (
+      let ancestor = routeInfo.parent;
+      ancestor;
+      ancestor = ancestor.parent
+    ) {
+      ancestors.push(ancestor);
+    }
+
+    let routeModule: RouteModule;
+    try {
+      [routeModule] = await Promise.all([
+        loadRouteModule(),
+        ...ancestors.map((ancestor) => state.getAncestorPromise(ancestor)),
+      ]);
+    } catch {
+      return;
+    }
+
+    if (!routeModule.LoadingState || this.#loadingStopped(state, loading)) {
+      return;
+    }
+
+    // eslint-disable-next-line ember/no-private-routing-service
+    const router = this.#owner.lookup('router:main') as EmberRouter;
+    const substateName = `${bucket.args.name}_loading`;
+    if (!router.hasRoute(substateName)) {
+      return;
+    }
+
+    const registrationName: `route:${string}` = `route:${substateName}`;
+    if (!this.#owner.factoryFor(registrationName)) {
+      this.#loadingStates.set(substateName, routeModule.LoadingState);
+      this.#owner.register(registrationName, bucket.routeClass);
+    }
+
+    router.intermediateTransitionTo(substateName);
+  }
+
+  #loadingStopped(state: EnterState, loading: LoadingAttempt): boolean {
+    return (
+      !loading.pending ||
+      state.signal.aborted ||
+      isDestroying(this.#owner) ||
+      isDestroyed(this.#owner)
+    );
   }
 }

@@ -2663,7 +2663,7 @@ packages:
     engines: {node: 8.* || 10.* || >= 12}
 
   ember-source@file:ember-source-7.4.0-alpha.1.tgz:
-    resolution: {integrity: sha512-n5yBN+CvcUUMpYj9p2v7trWfnb7sZH/MH6kObo1izp6f6/uUSD0GRvXytVfuuHLeeo3NKQEp1sP9nMrq0sNUDQ==, tarball: file:ember-source-7.4.0-alpha.1.tgz}
+    resolution: {integrity: sha512-uVUdu3UXwSBh9qE8xszF3ZKBH4hTFhYCCQhK8mWUK/MfCsVdC5wQ6XvwVOuYqULrRBIvxWt1nQVzpRwt0pc6MQ==, tarball: file:ember-source-7.4.0-alpha.1.tgz}
     version: 7.4.0-alpha.1
     engines: {node: '>= 20.19'}
     peerDependencies:
