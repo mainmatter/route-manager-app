@@ -9,7 +9,7 @@ overrides:
 
 patchedDependencies:
   ember-cli-fastboot@5.0.2:
-    hash: 976ae534c89bbe2a50c749a59d219d88c2058a00e17bf88f10b9a12315124981
+    hash: 6edd4bac06ef07b8bf860102a0cdb3d00e690b3243e7e04c24502b9083852566
     path: patches/ember-cli-fastboot@5.0.2.patch
 
 importers:
@@ -93,7 +93,7 @@ importers:
         version: 3.4.0(ember-source@file:ember-source-7.4.0-alpha.1.tgz(@glimmer/component@2.1.1))
       ember-cli-fastboot:
         specifier: 5.0.2
-        version: 5.0.2(patch_hash=976ae534c89bbe2a50c749a59d219d88c2058a00e17bf88f10b9a12315124981)
+        version: 5.0.2(patch_hash=6edd4bac06ef07b8bf860102a0cdb3d00e690b3243e7e04c24502b9083852566)
       ember-cli-htmlbars:
         specifier: ^7.0.1
         version: 7.0.1(@babel/core@7.29.0)(ember-source@file:ember-source-7.4.0-alpha.1.tgz(@glimmer/component@2.1.1))
@@ -9062,7 +9062,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  ember-cli-fastboot@5.0.2(patch_hash=976ae534c89bbe2a50c749a59d219d88c2058a00e17bf88f10b9a12315124981):
+  ember-cli-fastboot@5.0.2(patch_hash=6edd4bac06ef07b8bf860102a0cdb3d00e690b3243e7e04c24502b9083852566):
     dependencies:
       '@babel/core': 7.29.0
       broccoli-concat: 4.2.7
