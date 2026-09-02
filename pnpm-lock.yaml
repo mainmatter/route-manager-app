@@ -2830,7 +2830,7 @@ packages:
     engines: {node: 8.* || 10.* || >= 12}
 
   ember-source@file:ember-source-7.4.0-alpha.1.tgz:
-    resolution: {integrity: sha512-ZI8p9WVmQubQfjULMY4fc7aqiWfJxubF3QkqpRwLFAP28lmJ3LBTZUR91pbFR9RAhJN3Ok0pSTe2VsvyJDaexw==, tarball: file:ember-source-7.4.0-alpha.1.tgz}
+    resolution: {integrity: sha512-gl4k8ZzWRpbIqUpOwRSsVEKwchmTv91qVadSOsCrTGNMnkeP8Esm63/2brE5HND9Nl0bWpsjc4VhrsbX9HpEAw==, tarball: file:ember-source-7.4.0-alpha.1.tgz}
     version: 7.4.0-alpha.1
     engines: {node: '>= 20.19'}
     peerDependencies:
