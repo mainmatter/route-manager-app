@@ -10,6 +10,8 @@ export const LoadingState = <template>
 </template>;
 
 export default class CharmanderRoute extends BaseRoute {
+  static LoadingState = LoadingState;
+
   async model({ parent, signal }: RouteModelArgs) {
     const parentContext = await parent;
     return {

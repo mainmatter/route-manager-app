@@ -21,15 +21,13 @@ export type RouteComponent = ComponentLike<{
   Args: { context: unknown; outlet: unknown };
 }>;
 
-interface RouteModule {
+interface RouteClassWithLoadingState {
   LoadingState?: RouteComponent;
 }
 
 interface LoadingAttempt {
   pending: boolean;
 }
-
-const routeModules = import.meta.glob<RouteModule>('../routes/**/*.gts');
 
 export class RouteBucket implements RouteStateBucket {
   constructor(
@@ -151,9 +149,9 @@ export class PioneerRouteManager implements RouteManager<RouteBucket> {
     state: EnterState,
     loading: LoadingAttempt
   ): Promise<void> {
-    const routePath = `../routes/${bucket.args.name.replace(/\./g, '/')}.gts`;
-    const loadRouteModule = routeModules[routePath];
-    if (!loadRouteModule) {
+    const { LoadingState } = bucket.routeClass as typeof BaseRoute &
+      RouteClassWithLoadingState;
+    if (!LoadingState) {
       return;
     }
 
@@ -166,17 +164,15 @@ export class PioneerRouteManager implements RouteManager<RouteBucket> {
       ancestors.push(ancestor);
     }
 
-    let routeModule: RouteModule;
     try {
-      [routeModule] = await Promise.all([
-        loadRouteModule(),
-        ...ancestors.map((ancestor) => state.getAncestorPromise(ancestor)),
-      ]);
+      await Promise.all(
+        ancestors.map((ancestor) => state.getAncestorPromise(ancestor))
+      );
     } catch {
       return;
     }
 
-    if (!routeModule.LoadingState || this.#loadingStopped(state, loading)) {
+    if (this.#loadingStopped(state, loading)) {
       return;
     }
 
@@ -189,7 +185,7 @@ export class PioneerRouteManager implements RouteManager<RouteBucket> {
 
     const registrationName: `route:${string}` = `route:${substateName}`;
     if (!this.#owner.factoryFor(registrationName)) {
-      this.#loadingStates.set(substateName, routeModule.LoadingState);
+      this.#loadingStates.set(substateName, LoadingState);
       this.#owner.register(registrationName, bucket.routeClass);
     }
 
