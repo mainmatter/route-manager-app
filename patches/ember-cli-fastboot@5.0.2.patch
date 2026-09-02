@@ -56,16 +56,3 @@ index 96177b2db336a5142588e10fddaa333fc7691883..d08265cdc9ed660009adcd72a20d2493
 -  },
 +  initialize: function () {},
  };
-diff --git a/index.js b/index.js
-index a0d6bb7374828a5d7d28da0c6bcb998c0099f221..da8a77028f05e0ea07973d3955d7ce1f0429c85f 100644
---- a/index.js
-+++ b/index.js
-@@ -75,8 +75,6 @@ module.exports = {
-     // is eval'd in app-boot
-     app.options.autoRun = false;
- 
--    app.import('vendor/experimental-render-mode-rehydrate.js');
--
-     // get the app registry object and app name so that we can build the fastboot
-     // tree
-     this._appRegistry = app.registry;
