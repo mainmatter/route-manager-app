@@ -10,6 +10,8 @@ export const LoadingState = <template>
 </template>;
 
 export default class BulbasaurRoute extends BaseRoute {
+  static LoadingState = LoadingState;
+
   async model({ signal }: RouteModelArgs) {
     return {
       message: 'Hello from the bulbasaur model!',
