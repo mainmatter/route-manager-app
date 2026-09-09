@@ -10,6 +10,8 @@ export const LoadingState = <template>
 </template>;
 
 export default class SquirtleRoute extends BaseRoute {
+  static LoadingState = LoadingState;
+
   async model({ signal }: RouteModelArgs) {
     return {
       message: 'Hello from the Squirtle model!',

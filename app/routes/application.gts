@@ -8,6 +8,8 @@ export const LoadingState = <template>
 </template>;
 
 export default class ApplicationRoute extends BaseRoute {
+  static LoadingState = LoadingState;
+
   async model() {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     return {
