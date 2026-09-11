@@ -1,5 +1,17 @@
-<template>
-  <div class="classic">
+import type { TOC } from '@ember/component/template-only';
+import type { Pokemon } from 'use-route-manager/utils/pokemon-api';
+
+interface ClassicPokemonTemplateSignature {
+  Args: {
+    model: { pokemon: Pokemon };
+  };
+}
+
+const ClassicPokemonTemplate: TOC<ClassicPokemonTemplateSignature> = <template>
+  <div
+    class="classic"
+    data-test-route-level="classic-pokemon.pikachu.bulbasaur.charmander.squirtle"
+  >
     <h1>{{@model.pokemon.name}}</h1>
 
     <img
@@ -9,4 +21,6 @@
 
     {{outlet}}
   </div>
-</template>
+</template>;
+
+export default ClassicPokemonTemplate;
