@@ -8,7 +8,7 @@ export const LoadingState = <template>
 </template>;
 
 export default class ApplicationRoute extends BaseRoute {
-  async model() {
+  static async model() {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     return {
       message: 'Hello from the application model!',
@@ -25,7 +25,7 @@ export default class ApplicationRoute extends BaseRoute {
       |
       <LinkTo @route="pokemon">Go to Pokemon Route</LinkTo>
       |
-      <LinkTo @route="pokemon.pikachu.bulbasaur.charmander.squirtle">Go to
+      <LinkTo @route="pokemon.pikachu.bulbasaur.charmander.squirtle" @model="squirtle">Go to
         Squirtle Route</LinkTo>
       |
       <LinkTo @route="classic-pokemon">Go to Classic Pokemon Route</LinkTo>

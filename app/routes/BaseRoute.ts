@@ -1,21 +1,16 @@
-import type Owner from '@ember/owner';
-import { setOwner } from '@ember/owner';
 import { setRouteManager } from '@ember/routing';
 import { PioneerRouteManager } from 'use-route-manager/route-managers/pioneer-manager';
+import Component from '@glimmer/component';
 
 export interface RouteModelArgs {
   parent: Promise<unknown>;
   signal: AbortSignal;
 }
 
-export default class BaseRoute {
+export default class BaseRoute extends Component {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  model(_args: RouteModelArgs): Promise<unknown> {
+  static model(_args: RouteModelArgs): Promise<unknown> {
     return Promise.resolve(null);
-  }
-
-  constructor(owner: Owner) {
-    setOwner(this, owner);
   }
 }
 

@@ -16,7 +16,7 @@ Router.map(function () {
     this.route('pikachu', function () {
       this.route('bulbasaur', function () {
         this.route('charmander', function () {
-          this.route('squirtle');
+          this.route('squirtle', { path: ':squirtle_id' });
         });
       });
     });

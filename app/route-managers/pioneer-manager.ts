@@ -1,6 +1,5 @@
-import { makeRouteTemplate } from '@ember/-internals/glimmer';
 import type { InternalOwner } from '@ember/-internals/owner';
-import { isDestroyed, isDestroying } from '@ember/destroyable';
+import { isDestroyed, isDestroying, destroy } from '@ember/destroyable';
 import type Owner from '@ember/owner';
 import type RouteInfo from '@ember/routing/route-info';
 import type EmberRouter from '@ember/routing/router';
@@ -12,7 +11,7 @@ import type {
 } from '@ember/routing';
 import { routeCapabilities } from '@ember/routing';
 import { cancel, scheduleOnce } from '@ember/runloop';
-import { getComponentTemplate } from '@glimmer/manager';
+import { tracked } from '@glimmer/tracking';
 import type { ComponentLike } from '@glint/template';
 import { PioneerOutlet } from 'use-route-manager/route-managers/pioneer-outlet';
 import type BaseRoute from 'use-route-manager/routes/BaseRoute';
@@ -32,8 +31,9 @@ interface LoadingAttempt {
 const routeModules = import.meta.glob<RouteModule>('../routes/**/*.gts');
 
 export class RouteBucket implements RouteStateBucket {
+  @tracked token: object = {};
+
   constructor(
-    readonly route: BaseRoute,
     readonly routeClass: typeof BaseRoute,
     readonly args: CreateRouteArgs
   ) {}
@@ -53,11 +53,14 @@ export class PioneerRouteManager implements RouteManager<RouteBucket> {
     routeClass: typeof BaseRoute,
     args: CreateRouteArgs
   ): RouteBucket {
-    return new RouteBucket(new routeClass(this.#owner), routeClass, args);
+    return new RouteBucket(
+      routeClass,
+      args
+    );
   }
 
-  getDestroyable(bucket: RouteBucket): object | null {
-    return bucket.route;
+  getDestroyable(): object | null {
+    return null;
   }
 
   getRouteWrapper(): object {
@@ -91,7 +94,34 @@ export class PioneerRouteManager implements RouteManager<RouteBucket> {
     const loadingTimer = scheduleOnce('routerTransitions', showLoadingSubstate);
 
     try {
-      return await bucket.route.model({ parent, signal: state.signal });
+      const model = await bucket.routeClass.model({
+        owner: this.#owner,
+        params: routeInfo?.params ?? {},
+        queryParams: routeInfo?.queryParams ?? {},
+        signal: state.signal,
+        parent,
+      });
+
+      // Update the token after the model hook loaded, meaning our route is
+      // ready to render. We still hook up a signal abort listener in case the
+      // transition is aborted in another route.
+      state.signal.throwIfAborted();
+
+      const token = {};
+      const previous = bucket.token;
+      bucket.token = token;
+
+      // Undo it if this transition never commits. Guarded on identity, so a
+      // later visit that already replaced the token wins and this is a no-op.
+      state.signal.addEventListener(
+        'abort',
+        () => {
+          if (bucket.token === token) bucket.token = previous;
+        },
+        { once: true }
+      );
+
+      return model;
     } finally {
       loading.pending = false;
       // eslint-disable-next-line ember/no-runloop
@@ -125,24 +155,7 @@ export class PioneerRouteManager implements RouteManager<RouteBucket> {
       return Promise.resolve(loadingState);
     }
 
-    // Retrieve the template factory from the co-located .gts class and wrap it
-    // in a RouteTemplate so it can be rendered as a component.
-    const templateFactory = getComponentTemplate(bucket.routeClass);
-    if (!templateFactory) {
-      throw new Error(
-        `PioneerRouteManager: no template found for route "${bucket.args.name}". ` +
-          `Make sure the route class is defined in a .gts file with a co-located <template>.`
-      );
-    }
-
-    const template = templateFactory(this.#owner);
-    return Promise.resolve(
-      makeRouteTemplate(
-        this.#owner,
-        bucket.args.name,
-        template
-      ) as unknown as RouteComponent
-    );
+    return Promise.resolve(bucket.routeClass);
   }
 
   async #showLoadingSubstate(

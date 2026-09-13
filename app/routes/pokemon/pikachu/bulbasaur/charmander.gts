@@ -10,7 +10,7 @@ export const LoadingState = <template>
 </template>;
 
 export default class CharmanderRoute extends BaseRoute {
-  async model({ parent, signal }: RouteModelArgs) {
+  static async model({ parent, signal }: RouteModelArgs) {
     const parentContext = await parent;
     return {
       message: 'Hello from the pokemon model!',
@@ -36,7 +36,7 @@ export default class CharmanderRoute extends BaseRoute {
         alt={{@context.pokemon.name}}
       />
 
-      {{outlet}}
+      <@outlet/>
     </div>
   </template>
 }
