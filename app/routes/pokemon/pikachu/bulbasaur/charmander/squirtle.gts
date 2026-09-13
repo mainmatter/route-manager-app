@@ -49,13 +49,16 @@ export default class SquirtleRoute extends BaseRoute {
       <LinkTo @route="pokemon.pikachu.bulbasaur.charmander.squirtle" @model="ditto">Go to Ditto</LinkTo>
 
       <h1>{{@context.pokemon.name}}</h1>
-      <p>Render Count: {{this.counter}}</p>
-      <button {{on "click" this.upCounter}}>Up render count</button>
 
       <img
         src={{@context.pokemon.sprites.front_default}}
         alt={{@context.pokemon.name}}
       />
+
+      <div>
+        <p>Counter: {{this.counter}}</p>
+        <button {{on "click" this.upCounter}}>Increase counter</button>
+      </div>
 
       {{outlet}}
     </div>
