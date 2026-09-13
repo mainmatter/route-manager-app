@@ -10,7 +10,7 @@ export const LoadingState = <template>
 </template>;
 
 export default class PikachuRoute extends BaseRoute {
-  async model({ signal }: RouteModelArgs) {
+  static async model({ signal }: RouteModelArgs) {
     return {
       message: 'Hello from the pokemon model!',
       pokemon: await loadPokemon('pikachu', signal),
